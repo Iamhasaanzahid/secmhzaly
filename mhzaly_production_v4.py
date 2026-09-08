@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.6 - ROBUST AI & SaaS EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.7 - FOOLPROOF SECRETS EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
 - Dual-Operator Authentication System with Robust Fallback Dictionary (mhzaly & naqaab50)
+- Foolproof Multi-Tier API Key Resolution (Secrets.toml + Environment Variables + Fallback)
 - Autonomous AI Agent Pipeline with Smart Groq Fallback Synthesis & Soft-404 Filters
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
@@ -28,6 +29,7 @@ import numpy as np
 import json
 import sqlite3
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
@@ -89,7 +91,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.6'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.7'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -392,6 +394,20 @@ class SecurityDatabase:
 # 3. STREAMLIT ENTERPRISE UI (MODERN SaaS CSS & PURPLE TEAM HUB)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def get_secret(key: str, default: str = "") -> str:
+    """Foolproof secret resolver checking st.secrets dictionary and environment variables."""
+    try:
+        if key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    
+    # Fallback to environment variables
+    if key in os.environ:
+        return os.environ[key]
+        
+    return default
+
 def main():
     st.set_page_config(
         page_title="MHZALY Purple Team Operations Suite",
@@ -503,10 +519,11 @@ def main():
                     st.error("Authentication failed: Invalid credentials.")
         return
 
-    vt_key = st.secrets.get("VIRUSTOTAL_API_KEY", "")
-    abuse_key = st.secrets.get("ABUSEIPDB_API_KEY", "")
-    groq_key = st.secrets.get("GROQ_API_KEY", "")
-    nvd_key = st.secrets.get("NVD_API_KEY", "")
+    # Foolproof API Key Resolution
+    vt_key = get_secret("VIRUSTOTAL_API_KEY")
+    abuse_key = get_secret("ABUSEIPDB_API_KEY")
+    groq_key = get_secret("GROQ_API_KEY")
+    nvd_key = get_secret("NVD_API_KEY")
     
     db = SecurityDatabase()
 
