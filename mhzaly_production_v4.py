@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v11.0 - ADVANCED SOC & TRIAGE EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v12.1 - FULL SCALE UNIFIED EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible API)
+- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
+- Unified 4-API Intelligence Pipeline (Groq + VT + AbuseIPDB + NVD)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
-- Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Structured Parsing
+- Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Parsing
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder & Hashing Utility
 - SQLite Persistence & Audit Log History Tracking
@@ -88,7 +89,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/9.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/11.0'
         })
         
         try:
@@ -212,7 +213,6 @@ class ThreatIntelService:
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
-        # 1. VirusTotal Request & Detailed Parsing
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -227,7 +227,6 @@ class ThreatIntelService:
                 if resp.status_code == 200:
                     vt_json = resp.json()
                     results['vt_raw'] = vt_json
-                    
                     attrs = vt_json.get('data', {}).get('attributes', {})
                     stats = attrs.get('last_analysis_stats', {})
                     
@@ -243,7 +242,6 @@ class ThreatIntelService:
             except Exception as e:
                 results['vt_summary']['error'] = str(e)
 
-        # 2. AbuseIPDB Request & Detailed Parsing (Strictly IP Safe)
         if self.abuse_key and is_ip:
             try:
                 headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
@@ -431,6 +429,7 @@ def main():
         module = st.radio(
             "Navigation Menu",
             [
+                "⚡ Unified 4-API Pipeline",
                 "🤖 AI Security Chatbot",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
@@ -447,7 +446,65 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "🤖 AI Security Chatbot":
+    if module == "⚡ Unified 4-API Pipeline":
+        st.markdown("# ⚡ Unified Multi-API Intelligence Pipeline")
+        st.markdown("Combine VirusTotal, AbuseIPDB, NVD, and Groq AI into a single automated workflow.")
+
+        pipeline_target = st.text_input("Enter Target Domain, IP, or Software Keyword", placeholder="e.g., target.com or apache")
+
+        if st.button("🚀 Execute Full 4-API Automated Pipeline", type="primary", use_container_width=True):
+            if pipeline_target:
+                with st.spinner("Running synchronized multi-API intelligence pipeline..."):
+                    db.log_activity("Unified Pipeline", pipeline_target, "Initiated")
+                    
+                    ti = ThreatIntelService(vt_key, abuse_key)
+                    ti_res = ti.triage_indicator(pipeline_target)
+                    
+                    nvd = NVDIntelligenceClient(nvd_key)
+                    cve_res = nvd.search_cve(pipeline_target, max_results=5)
+                    
+                    recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
+
+                    st.success("Pipeline executed successfully. Synthesizing data via Groq AI...")
+
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("VT Malicious Hits", ti_res['vt_summary']['malicious'])
+                    c2.metric("Abuse Confidence", f"{ti_res['abuse_summary']['score']}%")
+                    c3.metric("Associated CVEs Found", len(cve_res))
+
+                    if groq_key:
+                        summary_context = f"""
+                        Target: {pipeline_target}
+                        VirusTotal Malicious Count: {ti_res['vt_summary']['malicious']}
+                        AbuseIPDB Score: {ti_res['abuse_summary']['score']}
+                        Technologies found: {recon_res.get('technologies', [])}
+                        Top CVEs: {[c.cve_id for c in cve_res]}
+                        """
+                        try:
+                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                            payload = {
+                                'model': 'openai/gpt-oss-120b',
+                                'messages': [
+                                    {'role': 'system', 'content': 'You are an automated Red/Blue Team AI Analyst. Synthesize the provided multi-API recon data into a risk assessment report and actionable verification playbook.'},
+                                    {'role': 'user', 'content': summary_context}
+                                ],
+                                'temperature': 0.5,
+                                'max_tokens': 1200
+                            }
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            if resp.status_code == 200:
+                                st.markdown("### 🧠 AI Automated Threat Synthesis & Playbook")
+                                st.markdown(resp.json()['choices'][0]['message']['content'])
+                            else:
+                                st.error(f"AI Synthesis Error: {resp.status_code}")
+                        except Exception as e:
+                            st.error(f"AI connection error: {e}")
+                    else:
+                        st.warning("Groq API key missing; skipped AI synthesis step.")
+            else:
+                st.warning("Please enter a target indicator or keyword.")
+
+    elif module == "🤖 AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
         st.markdown("Ask anything about security, exploit vectors, WAF bypass, or Sigma detection rules. Powered by Groq AI.")
 
