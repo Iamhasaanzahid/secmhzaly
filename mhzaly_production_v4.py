@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v12.1 - FULL SCALE UNIFIED EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v12.2 - FULL PIPELINE & AI CHATBOT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Unified 4-API Intelligence Pipeline (Groq + VT + AbuseIPDB + NVD)
+- Unified 4-API Intelligence Pipeline with Live AI Threat Synthesis & Explanation
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Parsing
@@ -89,7 +89,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/11.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/12.0'
         })
         
         try:
@@ -447,12 +447,12 @@ def main():
             st.rerun()
 
     if module == "⚡ Unified 4-API Pipeline":
-        st.markdown("# ⚡ Unified Multi-API Intelligence Pipeline")
-        st.markdown("Combine VirusTotal, AbuseIPDB, NVD, and Groq AI into a single automated workflow.")
+        st.markdown("# ⚡ Unified Multi-API Intelligence Pipeline with AI Explanation")
+        st.markdown("Synchronize **VirusTotal, AbuseIPDB, NVD, and Groq AI** to automatically scan, correlate, and explain vulnerabilities in depth.")
 
         pipeline_target = st.text_input("Enter Target Domain, IP, or Software Keyword", placeholder="e.g., target.com or apache")
 
-        if st.button("🚀 Execute Full 4-API Automated Pipeline", type="primary", use_container_width=True):
+        if st.button("🚀 Execute Full 4-API Automated Pipeline & AI Analysis", type="primary", use_container_width=True):
             if pipeline_target:
                 with st.spinner("Running synchronized multi-API intelligence pipeline..."):
                     db.log_activity("Unified Pipeline", pipeline_target, "Initiated")
@@ -465,7 +465,7 @@ def main():
                     
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
 
-                    st.success("Pipeline executed successfully. Synthesizing data via Groq AI...")
+                    st.success("Pipeline executed successfully. Generating AI breakdown and explanation...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Hits", ti_res['vt_summary']['malicious'])
@@ -485,22 +485,22 @@ def main():
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an automated Red/Blue Team AI Analyst. Synthesize the provided multi-API recon data into a risk assessment report and actionable verification playbook.'},
-                                    {'role': 'user', 'content': summary_context}
+                                    {'role': 'system', 'content': 'You are an expert Cybersecurity Mentor and AI Bug Bounty Analyst. Explain clearly to the operator what these findings mean, what risks exist, and how to verify them step by step.'},
+                                    {'role': 'user', 'content': f"Please analyze and explain this recon and vulnerability telemetry in detail:\n{summary_context}"}
                                 ],
-                                'temperature': 0.5,
-                                'max_tokens': 1200
+                                'temperature': 0.6,
+                                'max_tokens': 1500
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
                             if resp.status_code == 200:
-                                st.markdown("### 🧠 AI Automated Threat Synthesis & Playbook")
+                                st.markdown("### 🧠 AI Detailed Explanation & Verification Guide")
                                 st.markdown(resp.json()['choices'][0]['message']['content'])
                             else:
-                                st.error(f"AI Synthesis Error: {resp.status_code}")
+                                st.error(f"AI Synthesis Error: {resp.status_code} - {resp.text}")
                         except Exception as e:
                             st.error(f"AI connection error: {e}")
                     else:
-                        st.warning("Groq API key missing; skipped AI synthesis step.")
+                        st.warning("Groq API key missing; skipped AI explanation step.")
             else:
                 st.warning("Please enter a target indicator or keyword.")
 
