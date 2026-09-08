@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v12.2 - FULL PIPELINE & AI CHATBOT
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v13.0 - FULL SCALE REPORTING EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Unified 4-API Intelligence Pipeline with Live AI Threat Synthesis & Explanation
+- Automated Security Finding Report Generator & Exporter (Markdown / HTML)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Parsing
@@ -89,7 +90,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/12.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/13.0'
         })
         
         try:
@@ -430,6 +431,7 @@ def main():
             "Navigation Menu",
             [
                 "⚡ Unified 4-API Pipeline",
+                "📄 Automated Report Generator",
                 "🤖 AI Security Chatbot",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
@@ -493,8 +495,25 @@ def main():
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
                             if resp.status_code == 200:
+                                ai_text = resp.json()['choices'][0]['message']['content']
                                 st.markdown("### 🧠 AI Detailed Explanation & Verification Guide")
-                                st.markdown(resp.json()['choices'][0]['message']['content'])
+                                st.markdown(ai_text)
+                                
+                                # Store report in session state for export
+                                st.session_state.last_report = f"""# MHZALY SECURITY ASSESSMENT REPORT
+**Target:** {pipeline_target}
+**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Operator:** {st.session_state.user}
+
+## 1. Executive Summary & Telemetry
+- **VirusTotal Malicious Hits:** {ti_res['vt_summary']['malicious']}
+- **AbuseIPDB Confidence Score:** {ti_res['abuse_summary']['score']}%
+- **Fingerprinted Technologies:** {recon_res.get('technologies', [])}
+- **Associated CVEs:** {[c.cve_id for c in cve_res]}
+
+## 2. AI Threat Analysis & Playbook
+{ai_text}
+"""
                             else:
                                 st.error(f"AI Synthesis Error: {resp.status_code} - {resp.text}")
                         except Exception as e:
@@ -503,6 +522,51 @@ def main():
                         st.warning("Groq API key missing; skipped AI explanation step.")
             else:
                 st.warning("Please enter a target indicator or keyword.")
+
+    elif module == "📄 Automated Report Generator":
+        st.markdown("# 📄 Automated Security Assessment Report Generator")
+        st.markdown("Compile your target findings, telemetry, and AI insights into a professional markdown/HTML report ready for export.")
+
+        report_target = st.text_input("Report Target Name / Organization", placeholder="e.g., target-domain.com")
+        report_author = st.text_input("Lead Security Operator", value=st.session_state.user)
+        executive_summary = st.text_area("Executive Summary / Scope Overview", placeholder="Describe the target scope and testing objective...")
+        key_findings = st.text_area("Key Vulnerabilities & Observations", placeholder="List discovered endpoints, open ports, or suspected flaws...")
+        remediation_notes = st.text_area("Remediation & Defensive Recommendations", placeholder="Enter hardening guidelines or vendor patches...")
+
+        if st.button("📝 Generate & Export Report", type="primary", use_container_width=True):
+            if report_target:
+                report_content = f"""# 🛡️ MHZALY ENTERPRISE SECURITY ASSESSMENT REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+* **Target Scope:** `{report_target}`
+* **Lead Operator:** `{report_author}`
+* **Generation Date:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
+* **Classification:** CONFIDENTIAL / BUG BOUNTY ASSESSMENT
+
+## 1. Executive Summary
+{executive_summary if executive_summary else "No executive summary provided."}
+
+## 2. Technical Findings & Recon Observations
+{key_findings if key_findings else "No detailed findings recorded."}
+
+## 3. Remediation & Hardening Roadmap
+{remediation_notes if remediation_notes else "Standard vendor patching and WAF tuning recommended."}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*Generated via MHZALY Bug Bounty & Security Operations Suite*
+"""
+                st.success("Security Report Generated Successfully.")
+                st.markdown("---")
+                st.markdown(report_content)
+                
+                st.download_button(
+                    label="📥 Download Markdown Report (.md)",
+                    data=report_content,
+                    file_name=f"security_report_{report_target.replace('/', '_')}.md",
+                    mime="text/markdown",
+                    use_container_width=True
+                )
+            else:
+                st.warning("Please specify a target name for the report.")
 
     elif module == "🤖 AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
@@ -594,13 +658,6 @@ def main():
                     exposed = recon.get('exposed_files', [])
                     if exposed:
                         st.dataframe(pd.DataFrame(exposed), use_container_width=True)
-                        json_report = json.dumps(recon, indent=2)
-                        st.download_button(
-                            "Export Recon Report (JSON)",
-                            data=json_report,
-                            file_name=f"recon_{target_input.replace('/', '_')}.json",
-                            mime="application/json"
-                        )
                     else:
                         st.info("No common sensitive files discovered on standard paths.")
             else:
