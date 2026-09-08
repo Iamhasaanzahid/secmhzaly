@@ -1,15 +1,15 @@
-#!/usr/init/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.0 - BUSINESS LOGIC & IDOR EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.2 - BULLETPROOF 100% PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Autonomous 4-API Intelligence Pipeline with Deep Logic Flaw & IDOR Correlation
+- 100% Autonomous 4-API Pipeline with Bulletproof Exception Safety & IDOR Hunting
+- Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Automated Enterprise Security Report Generator & Exporter
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
-- Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Parsing
+- Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Safe Parsing
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder & Hashing Utility
 - SQLite Persistence & Audit Log History Tracking
@@ -63,37 +63,31 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES
+# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (BULLETPROOF SAFE PARSING)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
-    """Advanced Target Profiling & Sensitive File Enumeration"""
-    
     @staticmethod
     def deep_recon(target: str) -> Dict[str, Any]:
-        report = {'target': target, 'status_code': None, 'server': None, 'technologies': [], 'exposed_files': [], 'dns': {}}
-        if not target.startswith(('http://', 'https://')):
-            target_url = f"https://{target}"
-        else:
-            target_url = target
-            
-        parsed_domain = urllib.parse.urlparse(target_url).netloc or target
-        
-        # 1. DNS Enumeration
-        for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
-            try:
-                answers = dns.resolver.resolve(parsed_domain, rtype)
-                report['dns'][rtype] = [str(r) for r in answers]
-            except Exception:
-                report['dns'][rtype] = []
-
-        # 2. HTTP Probing & Fingerprinting
-        session = requests.Session()
-        session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.0'
-        })
-        
+        report = {'target': target, 'status_code': None, 'server': 'Hidden / Unknown', 'technologies': [], 'exposed_files': [], 'dns': {}}
         try:
+            if not target.startswith(('http://', 'https://')):
+                target_url = f"https://{target}"
+            else:
+                target_url = target
+                
+            parsed_domain = urllib.parse.urlparse(target_url).netloc or target
+            
+            for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
+                try:
+                    answers = dns.resolver.resolve(parsed_domain, rtype)
+                    report['dns'][rtype] = [str(r) for r in answers]
+                except Exception:
+                    report['dns'][rtype] = []
+
+            session = requests.Session()
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.2'})
+            
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
             report['server'] = resp.headers.get('Server', 'Hidden / Unknown')
@@ -111,16 +105,13 @@ class BugBountyReconEngine:
                 report['technologies'].append('Node.js / Express')
             if 'cloudflare' in headers_str:
                 report['technologies'].append('Cloudflare WAF / Reverse Proxy')
-            if 'aws' in headers_str or 'amazon' in headers_str:
-                report['technologies'].append('Amazon AWS Cloud Infrastructure')
 
             fuzz_paths = [
                 '/.env', '/robots.txt', '/sitemap.xml', '/git/config', 
                 '/backup.zip', '/api/v1/users', '/swagger.ui', '/phpinfo.php',
                 '/config.json', '/auth/login', '/graphql', '/debug', '/admin',
                 '/server-status', '/xmlrpc.php', '/package.json', '/composer.json',
-                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env',
-                '/api/v1/checkout', '/api/v1/orders', '/api/v1/profile'
+                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env'
             ]
             
             base_origin = f"{urllib.parse.urlparse(target_url).scheme}://{urllib.parse.urlparse(target_url).netloc}"
@@ -133,21 +124,14 @@ class BugBountyReconEngine:
                         if p_resp.status_code == 200 and len(p_resp.text) > 10:
                             if any(err in p_resp.text.lower() for err in ["not found", "404 page", "does not exist", "object not found"]):
                                 continue
-                        report['exposed_files'].append({
-                            'path': path, 
-                            'status': p_resp.status_code, 
-                            'size': len(p_resp.text)
-                        })
+                        report['exposed_files'].append({'path': path, 'status': p_resp.status_code, 'size': len(p_resp.text)})
                 except Exception:
                     pass
-                    
         except Exception as e:
             report['error'] = str(e)
-            
         return report
 
 class NVDIntelligenceClient:
-    """NVD v2.0 Client with Accelerated API Key Support"""
     def __init__(self, nvd_key: str = ""):
         self.base_url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
         self.nvd_key = nvd_key
@@ -166,20 +150,23 @@ class NVDIntelligenceClient:
                 for item in data.get('vulnerabilities', []):
                     cve = item.get('cve', {})
                     cve_id = cve.get('id', 'UNKNOWN')
-                    desc = cve.get('descriptions', [{}])[0].get('value', 'No description.')
+                    
+                    descriptions = cve.get('descriptions', [])
+                    desc = descriptions[0].get('value', 'No description.') if descriptions else 'No description.'
                     
                     score = 0.0
                     severity = "UNKNOWN"
                     vector = "N/A"
                     metrics = cve.get('metrics', {})
-                    if 'cvssMetricV31' in metrics:
+                    
+                    if 'cvssMetricV31' in metrics and metrics['cvssMetricV31']:
                         cvss_data = metrics['cvssMetricV31'][0].get('cvssData', {})
-                        score = cvss_data.get('baseScore', 0.0)
+                        score = float(cvss_data.get('baseScore', 0.0))
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
-                    elif 'cvssMetricV30' in metrics:
+                    elif 'cvssMetricV30' in metrics and metrics['cvssMetricV30']:
                         cvss_data = metrics['cvssMetricV30'][0].get('cvssData', {})
-                        score = cvss_data.get('baseScore', 0.0)
+                        score = float(cvss_data.get('baseScore', 0.0))
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
                         
@@ -188,10 +175,10 @@ class NVDIntelligenceClient:
                         title=cve_id,
                         description=desc,
                         severity=severity.upper(),
-                        cvss_score=float(score),
+                        cvss_score=score,
                         vector_string=vector,
                         affected_configurations=[keyword],
-                        published_date=cve.get('published', '')[:10],
+                        published_date=str(cve.get('published', ''))[:10],
                         remediation=f"Apply official vendor patch or configure WAF signature to mitigate {cve_id}."
                     ))
         except Exception as e:
@@ -199,7 +186,6 @@ class NVDIntelligenceClient:
         return vulnerabilities
 
 class ThreatIntelService:
-    """Advanced Threat Intelligence & IOC Triage Engine with Granular Parsing"""
     def __init__(self, vt_key: str, abuse_key: str):
         self.vt_key = vt_key
         self.abuse_key = abuse_key
@@ -213,131 +199,125 @@ class ThreatIntelService:
             'abuse_summary': {'score': 0, 'reports': 0, 'country': 'N/A', 'isp': 'N/A', 'lastReported': 'N/A'}
         }
         
-        is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
-        is_url = indicator.startswith(('http://', 'https://'))
+        try:
+            is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
+            is_url = indicator.startswith(('http://', 'https://'))
 
-        if self.vt_key:
-            try:
-                headers = {'x-apikey': self.vt_key}
-                if is_url:
-                    url = f"https://www.virustotal.com/api/v3/urls/{urllib.parse.quote(indicator, safe='')}"
-                elif is_ip:
-                    url = f"https://www.virustotal.com/api/v3/ip_addresses/{indicator}"
-                else:
-                    url = f"https://www.virustotal.com/api/v3/domains/{indicator}"
-                
-                resp = requests.get(url, headers=headers, timeout=10)
-                if resp.status_code == 200:
-                    vt_json = resp.json()
-                    results['vt_raw'] = vt_json
-                    attrs = vt_json.get('data', {}).get('attributes', {})
-                    stats = attrs.get('last_analysis_stats', {})
+            if self.vt_key:
+                try:
+                    headers = {'x-apikey': self.vt_key}
+                    if is_url:
+                        url = f"https://www.virustotal.com/api/v3/urls/{urllib.parse.quote(indicator, safe='')}"
+                    elif is_ip:
+                        url = f"https://www.virustotal.com/api/v3/ip_addresses/{indicator}"
+                    else:
+                        url = f"https://www.virustotal.com/api/v3/domains/{indicator}"
                     
-                    results['vt_summary']['malicious'] = stats.get('malicious', 0)
-                    results['vt_summary']['suspicious'] = stats.get('suspicious', 0)
-                    results['vt_summary']['harmless'] = stats.get('harmless', 0)
-                    results['vt_summary']['undetected'] = stats.get('undetected', 0)
-                    results['vt_summary']['reputation'] = attrs.get('reputation', 0)
-                    results['vt_summary']['tags'] = attrs.get('tags', [])
-                    results['vt_summary']['registrar'] = attrs.get('registrar', attrs.get('as_owner', 'N/A'))
-                else:
-                    results['vt_summary']['error'] = f"VT HTTP Status: {resp.status_code}"
-            except Exception as e:
-                results['vt_summary']['error'] = str(e)
+                    resp = requests.get(url, headers=headers, timeout=10)
+                    if resp.status_code == 200:
+                        vt_json = resp.json()
+                        results['vt_raw'] = vt_json
+                        attrs = vt_json.get('data', {}).get('attributes', {})
+                        stats = attrs.get('last_analysis_stats', {})
+                        
+                        results['vt_summary']['malicious'] = int(stats.get('malicious', 0))
+                        results['vt_summary']['suspicious'] = int(stats.get('suspicious', 0))
+                        results['vt_summary']['harmless'] = int(stats.get('harmless', 0))
+                        results['vt_summary']['undetected'] = int(stats.get('undetected', 0))
+                        results['vt_summary']['reputation'] = int(attrs.get('reputation', 0))
+                        results['vt_summary']['tags'] = attrs.get('tags', [])
+                        results['vt_summary']['registrar'] = attrs.get('registrar', attrs.get('as_owner', 'N/A'))
+                    else:
+                        results['vt_summary']['error'] = f"VT HTTP Status: {resp.status_code}"
+                except Exception as e:
+                    results['vt_summary']['error'] = str(e)
 
-        if self.abuse_key and is_ip:
-            try:
-                headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
-                params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
-                resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
-                if resp.status_code == 200:
-                    abuse_json = resp.json()
-                    results['abuse_raw'] = abuse_json
-                    data = abuse_json.get('data', {})
-                    
-                    results['abuse_summary']['score'] = data.get('abuseConfidenceScore', 0)
-                    results['abuse_summary']['reports'] = data.get('totalReports', 0)
-                    results['abuse_summary']['country'] = data.get('countryCode', 'N/A')
-                    results['abuse_summary']['isp'] = data.get('isp', 'N/A')
-                    results['abuse_summary']['lastReported'] = data.get('lastReportedAt', 'Never')
-                else:
-                    results['abuse_summary']['error'] = f"AbuseIPDB Status: {resp.status_code}"
-            except Exception as e:
-                results['abuse_summary']['error'] = str(e)
-
+            if self.abuse_key and is_ip:
+                try:
+                    headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
+                    params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
+                    resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
+                    if resp.status_code == 200:
+                        abuse_json = resp.json()
+                        results['abuse_raw'] = abuse_json
+                        data = abuse_json.get('data', {})
+                        
+                        results['abuse_summary']['score'] = int(data.get('abuseConfidenceScore', 0))
+                        results['abuse_summary']['reports'] = int(data.get('totalReports', 0))
+                        results['abuse_summary']['country'] = str(data.get('countryCode', 'N/A'))
+                        results['abuse_summary']['isp'] = str(data.get('isp', 'N/A'))
+                        results['abuse_summary']['lastReported'] = str(data.get('lastReportedAt', 'Never'))
+                    else:
+                        results['abuse_summary']['error'] = f"AbuseIPDB Status: {resp.status_code}"
+                except Exception as e:
+                    results['abuse_summary']['error'] = str(e)
+        except Exception as e:
+            logger.error(f"ThreatIntel error: {e}")
+            
         return results
 
 class AdvancedReconEngine:
-    """Network Recon & Infrastructure Audit Module"""
     @staticmethod
     def audit_infrastructure(domain: str) -> Dict[str, Any]:
-        report = {}
-        dns_records = {}
-        for rtype in ['A', 'AAAA', 'MX', 'NS', 'TXT', 'SOA']:
-            try:
-                answers = dns.resolver.resolve(domain, rtype)
-                dns_records[rtype] = [str(r) for r in answers]
-            except Exception:
-                dns_records[rtype] = []
-        report['dns'] = dns_records
-
-        common_ports = [21, 22, 25, 53, 80, 110, 443, 445, 3306, 3389, 8080, 8443]
-        open_ports = []
-        for port in common_ports:
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(1.0)
-                res = sock.connect_ex((domain, port))
-                sock.close()
-                if res == 0:
-                    service_name = {
-                        21: 'FTP', 22: 'SSH', 25: 'SMTP', 53: 'DNS', 80: 'HTTP',
-                        110: 'POP3', 443: 'HTTPS', 445: 'SMB', 3306: 'MySQL',
-                        3389: 'RDP', 8080: 'HTTP-Alt', 8443: 'HTTPS-Alt'
-                    }.get(port, 'Unknown')
-                    open_ports.append({'port': port, 'service': service_name, 'status': 'OPEN'})
-            except Exception:
-                pass
-        report['ports'] = open_ports
-
-        ssl_info = {'valid': False, 'details': {}}
+        report = {'dns': {}, 'ports': [], 'ssl': {'valid': False}, 'headers': {}}
         try:
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-            with socket.create_connection((domain, 443), timeout=3) as sock:
-                with ctx.wrap_socket(sock, server_hostname=domain) as ssock:
-                    cert = ssock.getpeercert()
-                    if cert:
-                        ssl_info['valid'] = True
-                        ssl_info['details'] = {
-                            'subject': dict(x[0] for x in cert.get('subject', [])),
-                            'issuer': dict(x[0] for x in cert.get('issuer', [])),
-                            'version': cert.get('version'),
-                            'not_before': cert.get('notBefore'),
-                            'not_after': cert.get('notAfter')
-                        }
-        except Exception as e:
-            ssl_info['error'] = str(e)
-        report['ssl'] = ssl_info
+            for rtype in ['A', 'AAAA', 'MX', 'NS', 'TXT', 'SOA']:
+                try:
+                    answers = dns.resolver.resolve(domain, rtype)
+                    report['dns'][rtype] = [str(r) for r in answers]
+                except Exception:
+                    report['dns'][rtype] = []
 
-        headers_report = {}
-        try:
-            resp = requests.get(f"https://{domain}", timeout=5, verify=False)
-            target_headers = [
-                'Strict-Transport-Security', 'Content-Security-Policy',
-                'X-Frame-Options', 'X-Content-Type-Options', 'X-XSS-Protection'
-            ]
-            for h in target_headers:
-                headers_report[h] = resp.headers.get(h, 'MISSING')
-        except Exception as e:
-            headers_report['error'] = str(e)
-        report['headers'] = headers_report
+            common_ports = [21, 22, 25, 53, 80, 110, 443, 445, 3306, 3389, 8080, 8443]
+            open_ports = []
+            for port in common_ports:
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(0.8)
+                    res = sock.connect_ex((domain, port))
+                    sock.close()
+                    if res == 0:
+                        service_name = {
+                            21: 'FTP', 22: 'SSH', 25: 'SMTP', 53: 'DNS', 80: 'HTTP',
+                            110: 'POP3', 443: 'HTTPS', 445: 'SMB', 3306: 'MySQL',
+                            3389: 'RDP', 8080: 'HTTP-Alt', 8443: 'HTTPS-Alt'
+                        }.get(port, 'Unknown')
+                        open_ports.append({'port': port, 'service': service_name, 'status': 'OPEN'})
+                except Exception:
+                    pass
+            report['ports'] = open_ports
 
+            try:
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                with socket.create_connection((domain, 443), timeout=3) as sock:
+                    with ctx.wrap_socket(sock, server_hostname=domain) as ssock:
+                        cert = ssock.getpeercert()
+                        if cert:
+                            report['ssl']['valid'] = True
+                            report['ssl']['details'] = {
+                                'subject': dict(x[0] for x in cert.get('subject', [])),
+                                'issuer': dict(x[0] for x in cert.get('issuer', [])),
+                                'version': cert.get('version'),
+                                'not_before': cert.get('notBefore'),
+                                'not_after': cert.get('notAfter')
+                            }
+            except Exception as e:
+                report['ssl']['error'] = str(e)
+
+            try:
+                resp = requests.get(f"https://{domain}", timeout=5, verify=False)
+                target_headers = ['Strict-Transport-Security', 'Content-Security-Policy', 'X-Frame-Options', 'X-Content-Type-Options', 'X-XSS-Protection']
+                for h in target_headers:
+                    report['headers'][h] = resp.headers.get(h, 'MISSING')
+            except Exception as e:
+                report['headers']['error'] = str(e)
+        except Exception as e:
+            logger.error(f"Audit error: {e}")
         return report
 
 class SecurityDatabase:
-    """SQLite Persistence Database for Activity Logging"""
     def __init__(self, db_path: str = "security_platform.db"):
         self.db_path = db_path
         self.init_db()
@@ -450,15 +430,15 @@ def main():
             st.rerun()
 
     if module == "⚡ Unified 4-API Pipeline & Report":
-        st.markdown("# ⚡ Autonomous 4-API Pipeline & Business Logic / IDOR Assessment")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and leverages Groq AI to analyze context-aware business logic flaws, IDOR/BOLA vectors, and payment gateway flow bypasses.")
+        st.markdown("# ⚡ Autonomous 4-API Pipeline & Business Logic / IDOR Hunting Report")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and tasks Groq AI to hunt for **complex business logic flaws, IDOR, and payment gateway flow bypasses**.")
 
-        pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or api.target.com")
+        pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
-        if st.button("🚀 Run Autonomous Pipeline & Generate Deep Report", type="primary", use_container_width=True):
+        if st.button("🚀 Run Autonomous Pipeline & Generate Business Logic Report", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("Executing deep 4-API pipeline and analyzing business logic and IDOR vectors..."):
-                    db.log_activity("Logic Flaw Pipeline", pipeline_target, "Initiated")
+                with st.spinner("Executing deep 4-API pipeline and analyzing business logic attack vectors..."):
+                    db.log_activity("Business Logic & IDOR Pipeline", pipeline_target, "Initiated")
                     
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
@@ -468,7 +448,7 @@ def main():
                     
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
 
-                    st.success("Telemetry gathered. Performing Groq AI context-aware business logic & IDOR analysis...")
+                    st.success("Telemetry gathered. Performing Groq AI business logic & IDOR flaw analysis...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -490,8 +470,8 @@ def main():
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Hunter and Offensive Security Lead. Focus heavily on Context-Aware Business Logic Flaws, IDOR (Insecure Direct Object References), BOLA (Broken Object Level Authorization), and Payment Gateway Flow Bypasses based on the target endpoints and technology stack. Provide realistic hunting hypotheses, parameter manipulation strategies, and step-by-step verification playbooks.'},
-                                    {'role': 'user', 'content': f"Analyze this live target telemetry for business logic flaws, IDOR, and payment bypass vectors:\n{summary_context}"}
+                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Lead and Offensive Security Expert specializing in Complex Business Logic Vulnerabilities. Based on the target telemetry, explicitly analyze potential Insecure Direct Object References (IDOR), Payment Gateway Flow Bypasses, Price/Quantity Manipulation, and Multi-step Authorization Flaws. Provide deep verification methodology and step-by-step PoC testing instructions.'},
+                                    {'role': 'user', 'content': f"Analyze this target telemetry for business logic flaws, authorization gaps, and IDOR vectors:\n{summary_context}"}
                                 ],
                                 'temperature': 0.7,
                                 'max_tokens': 2000
@@ -508,15 +488,15 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY BUSINESS LOGIC & IDOR ASSESSMENT REPORT
+                    auto_report_markdown = f"""# 🛡️ MHZALY BUSINESS LOGIC & IDOR SECURITY ASSESSMENT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
 * **Lead Operator:** `{st.session_state.user}`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** BUG BOUNTY & ADVANCED LOGIC INTEL
+* **Classification:** BUG BOUNTY & BUSINESS LOGIC INTELLIGENCE
 
 ## 1. Executive Summary & Recon Scope Overview
-Automated 4-API intelligence gathering and context-aware logic assessment completed against `{pipeline_target}`.
+Automated 4-API intelligence gathering was completed against `{pipeline_target}`. The pipeline analyzed reputation scores, NVD CVE mappings, and target tech vectors to assess authorization architecture.
 - **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
 - **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
 - **Detected Technologies:** `{tech_md}`
@@ -532,7 +512,7 @@ Automated 4-API intelligence gathering and context-aware logic assessment comple
 - **Country Code:** `{ti_res['abuse_summary']['country']}`
 - **ISP:** `{ti_res['abuse_summary']['isp']}`
 
-## 3. Attack Surface Discovery & API Endpoints
+## 3. Attack Surface Discovery & Exposed Endpoints
 - **HTTP Status:** `{recon_res.get('status_code', 'N/A')}`
 - **Server Banner:** `{recon_res.get('server', 'Hidden')}`
 - **Discovered Endpoints & Files:**
@@ -549,13 +529,13 @@ Automated 4-API intelligence gathering and context-aware logic assessment comple
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Business Logic & IDOR Report Preview")
+                    st.markdown("### 📄 Generated Business Logic Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Logic Flaw & IDOR Report (.md)",
+                        label="📥 Download Full Business Logic & IDOR Report (.md)",
                         data=auto_report_markdown,
-                        file_name=f"mhzaly_logic_idor_report_{pipeline_target.replace('/', '_')}.md",
+                        file_name=f"mhzaly_business_logic_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
                         use_container_width=True
                     )
@@ -591,7 +571,7 @@ Automated 4-API intelligence gathering and context-aware logic assessment comple
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor. Provide detailed code, payloads, and defense mechanisms.'},
+                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor specializing in Business Logic and IDOR flaws.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
                                 ],
                                 'temperature': 0.6,
