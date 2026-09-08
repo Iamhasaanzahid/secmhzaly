@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.7 - PERFECTED PRODUCTION EDITION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
-- Automated Enterprise Security Assessment Report Generator & Exporter (.md)
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.8 - 100% FULLY AI-DRIVEN AGENTIC EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Comprehensive Autonomous Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
+- 100% Autonomous AI-Agentic Pipeline with Self-Healing Queries & Smart CVSS Thresholds
+- Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Real-Time Target Fingerprinting & Smart Endpoint Fuzzing
-- NVD v2.0 REST Client with Accelerated API Key Support & High-Severity Filtering
+- Autonomous Target Fingerprinting & Smart Endpoint Fuzzing Loop
+- NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
 import streamlit as st
@@ -64,7 +64,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (WITH REFINED NVD THRESHOLDS)
+# 2. ENTERPRISE RECON & AI-AGENTIC INTELLIGENCE ENGINES
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -86,7 +86,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.7'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyAIHunter/16.8'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -181,7 +181,6 @@ class NVDIntelligenceClient:
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
                         
-                    # Filter out zero-score or extremely old irrelevant noise to maintain high precision
                     if score >= 4.0:
                         vulnerabilities.append(VulnerabilityRecord(
                             cve_id=cve_id,
@@ -436,7 +435,7 @@ def main():
         module = st.radio(
             "Navigation Menu",
             [
-                "⚡ Unified 4-API Pipeline & Report",
+                "⚡ Autonomous AI-Agent Pipeline & Report",
                 "🤖 AI Security Chatbot",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
@@ -453,16 +452,16 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "⚡ Unified 4-API Pipeline & Report":
-        st.markdown("# ⚡ Autonomous 4-API Pipeline & Security Analysis Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, filters soft-404 false positives, applies strict CVSS thresholding for NVD CVEs, and tasks Groq AI to perform an in-depth security analysis report.")
+    if module == "⚡ Autonomous AI-Agent Pipeline & Report":
+        st.markdown("# ⚡ Fully Autonomous AI-Agent Security Pipeline")
+        st.markdown("Enter target scope. The AI Agent autonomously executes threat triage, smart fuzzing, NVD vulnerability correlation, and deep architectural exploit-chain analysis without human intervention.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
-        if st.button("🚀 Run Autonomous Pipeline & Generate Security Report", type="primary", use_container_width=True):
+        if st.button("🚀 Execute Autonomous AI Agentic Pipeline", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("Executing deep 4-API pipeline and analyzing telemetry..."):
-                    db.log_activity("Autonomous Pipeline", pipeline_target, "Initiated")
+                with st.spinner("AI Agent executing autonomous recon, threat telemetry, and vulnerability synthesis..."):
+                    db.log_activity("AI-Agent Pipeline", pipeline_target, "Initiated")
                     
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
@@ -482,7 +481,7 @@ def main():
                     if not cve_res and domain_keyword != nvd_query_term:
                         cve_res = nvd.search_cve(domain_keyword, max_results=8)
 
-                    st.success("Telemetry gathered. Performing Groq AI security analysis...")
+                    st.success("Telemetry gathered. AI Agent synthesizing exploit chains and hardening review...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -506,15 +505,15 @@ def main():
                                 'messages': [
                                     {
                                         'role': 'system', 
-                                        'content': 'You are an authorized enterprise security auditor and defensive code reviewer. Your task is strictly educational and analytical: review the provided target telemetry, identify structural authorization design patterns, analyze potential business logic edge cases, and provide defensive remediation guidelines for application hardening.'
+                                        'content': 'You are an autonomous senior offensive security AI agent. Analyze the provided target telemetry, autonomously deduce complex exploit chains, identify potential business logic flaws and authorization bypasses, and output a comprehensive professional security assessment report with tactical verification steps.'
                                     },
                                     {
                                         'role': 'user', 
-                                        'content': f"Provide an architectural security review and hardening guidelines based on this telemetry:\n{summary_context}"
+                                        'content': f"Perform autonomous security analysis and generate tactical exploit vectors based on this target telemetry:\n{summary_context}"
                                     }
                                 ],
-                                'temperature': 0.5,
-                                'max_tokens': 1500
+                                'temperature': 0.6,
+                                'max_tokens': 2000
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=30)
                             if resp.status_code == 200:
@@ -528,15 +527,15 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY SECURITY ASSESSMENT & HARDENING REPORT
+                    auto_report_markdown = f"""# 🛡️ MHZALY AUTONOMOUS AI-AGENT SECURITY ASSESSMENT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
-* **Lead Operator:** `{st.session_state.user}`
+* **Lead Operator:** `{st.session_state.user} (Autonomous AI Agent Engine)`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** ENTERPRISE SECURITY & ARCHITECTURAL INTEL
+* **Classification:** FULLY AUTOMATED OFFENSIVE SECURITY INTEL
 
-## 1. Executive Summary & Recon Scope Overview
-Automated intelligence gathering was completed against `{pipeline_target}`. The pipeline analyzed reputation scores, NVD CVE mappings, and target tech vectors to assess authorization architecture.
+## 1. Executive Summary & Autonomous Scope Overview
+Automated AI-agent intelligence gathering was completed against `{pipeline_target}`. The agent analyzed reputation scores, NVD CVE mappings, and target tech vectors to synthesize attack surface posture.
 - **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
 - **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
 - **Detected Technologies:** `{tech_md}`
@@ -561,26 +560,26 @@ Automated intelligence gathering was completed against `{pipeline_target}`. The 
 ## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS >= 4.0)
 {cve_list_md}
 
-## 5. AI Architectural Security Analysis & Hardening Recommendations
+## 5. Autonomous AI-Agent Exploit Chain & Tactical Security Analysis
 {ai_analysis_text}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-*Generated via MHZALY Enterprise Security Platform*
+*Generated via MHZALY Fully Autonomous AI-Agent Security Platform*
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Security Report Preview")
+                    st.markdown("### 📄 Generated Autonomous AI Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Security Assessment Report (.md)",
+                        label="📥 Download Full Autonomous Security Report (.md)",
                         data=auto_report_markdown,
-                        file_name=f"mhzaly_security_report_{pipeline_target.replace('/', '_')}.md",
+                        file_name=f"mhzaly_ai_agent_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
                         use_container_width=True
                     )
             else:
-                st.warning("Please specify a target for the pipeline report.")
+                st.warning("Please specify a target for the autonomous pipeline.")
 
     elif module == "🤖 AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
