@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/init/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v15.0 - DEEP SUBTLE VULN HUNTING
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.0 - BUSINESS LOGIC & IDOR EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Intelligence Pipeline with Deep Subtle Vulnerability Hunting
+- Autonomous 4-API Intelligence Pipeline with Deep Logic Flaw & IDOR Correlation
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Automated Enterprise Security Report Generator & Exporter
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
@@ -90,7 +90,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/15.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.0'
         })
         
         try:
@@ -119,7 +119,8 @@ class BugBountyReconEngine:
                 '/backup.zip', '/api/v1/users', '/swagger.ui', '/phpinfo.php',
                 '/config.json', '/auth/login', '/graphql', '/debug', '/admin',
                 '/server-status', '/xmlrpc.php', '/package.json', '/composer.json',
-                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env'
+                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env',
+                '/api/v1/checkout', '/api/v1/orders', '/api/v1/profile'
             ]
             
             base_origin = f"{urllib.parse.urlparse(target_url).scheme}://{urllib.parse.urlparse(target_url).netloc}"
@@ -449,15 +450,15 @@ def main():
             st.rerun()
 
     if module == "⚡ Unified 4-API Pipeline & Report":
-        st.markdown("# ⚡ Autonomous 4-API Pipeline & Deep Vulnerability Hunting Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, fetches real NVD vulnerabilities, uncovers subtle hidden flaws, and compiles an automated professional report.")
+        st.markdown("# ⚡ Autonomous 4-API Pipeline & Business Logic / IDOR Assessment")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and leverages Groq AI to analyze context-aware business logic flaws, IDOR/BOLA vectors, and payment gateway flow bypasses.")
 
-        pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target.com or apache")
+        pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or api.target.com")
 
         if st.button("🚀 Run Autonomous Pipeline & Generate Deep Report", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("Executing deep 4-API pipeline and hunting subtle bug bounty vectors..."):
-                    db.log_activity("Deep Autonomous Pipeline", pipeline_target, "Initiated")
+                with st.spinner("Executing deep 4-API pipeline and analyzing business logic and IDOR vectors..."):
+                    db.log_activity("Logic Flaw Pipeline", pipeline_target, "Initiated")
                     
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
@@ -467,7 +468,7 @@ def main():
                     
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
 
-                    st.success("Telemetry gathered. Performing Groq AI deep subtle vulnerability analysis...")
+                    st.success("Telemetry gathered. Performing Groq AI context-aware business logic & IDOR analysis...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -489,8 +490,8 @@ def main():
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Hunter and Offensive Security Lead. Uncover real-world, subtle, and low-visibility vulnerabilities (such as subtle IDOR precursors, hidden header misconfigurations, information disclosure via endpoints, or minor logic flaws) based on the target telemetry. Give deep, actionable details and PoC steps.'},
-                                    {'role': 'user', 'content': f"Perform deep subtle vulnerability correlation and generate a penetration testing breakdown for this target:\n{summary_context}"}
+                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Hunter and Offensive Security Lead. Focus heavily on Context-Aware Business Logic Flaws, IDOR (Insecure Direct Object References), BOLA (Broken Object Level Authorization), and Payment Gateway Flow Bypasses based on the target endpoints and technology stack. Provide realistic hunting hypotheses, parameter manipulation strategies, and step-by-step verification playbooks.'},
+                                    {'role': 'user', 'content': f"Analyze this live target telemetry for business logic flaws, IDOR, and payment bypass vectors:\n{summary_context}"}
                                 ],
                                 'temperature': 0.7,
                                 'max_tokens': 2000
@@ -507,15 +508,15 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY DEEP VULNERABILITY HUNTING & SECURITY REPORT
+                    auto_report_markdown = f"""# 🛡️ MHZALY BUSINESS LOGIC & IDOR ASSESSMENT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
 * **Lead Operator:** `{st.session_state.user}`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** BUG BOUNTY & OFFENSIVE SECURITY INTEL
+* **Classification:** BUG BOUNTY & ADVANCED LOGIC INTEL
 
 ## 1. Executive Summary & Recon Scope Overview
-Automated 4-API intelligence gathering was completed against `{pipeline_target}`. The pipeline combined reputation metrics, NIST NVD vulnerability records, and targeted directory/endpoint fuzzing.
+Automated 4-API intelligence gathering and context-aware logic assessment completed against `{pipeline_target}`.
 - **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
 - **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
 - **Detected Technologies:** `{tech_md}`
@@ -531,7 +532,7 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
 - **Country Code:** `{ti_res['abuse_summary']['country']}`
 - **ISP:** `{ti_res['abuse_summary']['isp']}`
 
-## 3. Attack Surface Discovery & Exposed Endpoints
+## 3. Attack Surface Discovery & API Endpoints
 - **HTTP Status:** `{recon_res.get('status_code', 'N/A')}`
 - **Server Banner:** `{recon_res.get('server', 'Hidden')}`
 - **Discovered Endpoints & Files:**
@@ -540,7 +541,7 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
 ## 4. Correlated Vulnerabilities (NIST NVD v2.0)
 {cve_list_md}
 
-## 5. AI Autonomous Deep Vulnerability & Subtle Flaw Analysis
+## 5. AI Business Logic, IDOR & Payment Flow Bypass Analysis
 {ai_analysis_text}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -548,13 +549,13 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Autonomous Report Preview")
+                    st.markdown("### 📄 Generated Business Logic & IDOR Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Deep Vulnerability Report (.md)",
+                        label="📥 Download Full Logic Flaw & IDOR Report (.md)",
                         data=auto_report_markdown,
-                        file_name=f"mhzaly_deep_vuln_report_{pipeline_target.replace('/', '_')}.md",
+                        file_name=f"mhzaly_logic_idor_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
                         use_container_width=True
                     )
