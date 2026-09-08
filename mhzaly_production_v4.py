@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.3 - FULL SCALE PRODUCTION
+🛡️ MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v9.0 - FULL DETAILED SCALE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
+- Interactive AI Security Chatbot (Powered by Groq 4-API Integration)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP safe)
@@ -89,7 +90,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/5.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/7.0'
         })
         
         try:
@@ -365,8 +366,8 @@ class SecurityDatabase:
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Enterprise Bug Bounty Suite",
-        page_icon="🎯",
+        page_title="MHZALY AI Security Chatbot Suite",
+        page_icon="🤖",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -409,12 +410,12 @@ def main():
         module = st.radio(
             "Navigation Menu",
             [
+                "🤖 AI Security Chatbot",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
                 "Network Infrastructure Audit",
                 "Enterprise NVD Intelligence",
                 "Threat Intel & IOC Triage",
-                "Groq AI Cyber & Exploit Assistant",
                 "Offensive Encoder & Hasher",
                 "Activity History & Logs",
                 "Platform Configuration"
@@ -425,14 +426,59 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "Command Telemetry Center":
+    if module == "🤖 AI Security Chatbot":
+        st.markdown("# AI Security Operations & Bug Bounty Chatbot")
+        st.markdown("Ask anything about security, exploit vectors, recon strategies, or SOC playbooks. Powered by Groq AI.")
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hello operator! I am your MHZALY AI Security Assistant backed by your active API keys. How can I assist your bug bounty or SOC operations today?"}
+            ]
+
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        if prompt := st.chat_input("Ask a security query or request a payload/playbook..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+                if not groq_key:
+                    response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
+                    st.markdown(response_text)
+                else:
+                    with st.spinner("Analyzing via Groq AI..."):
+                        try:
+                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                            payload = {
+                                'model': 'llama-3.3-70b-versatile',
+                                'messages': [
+                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor.'},
+                                    *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
+                                ],
+                                'temperature': 0.6,
+                                'max_tokens': 1500
+                            }
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            if resp.status_code == 200:
+                                response_text = resp.json()['choices'][0]['message']['content']
+                            else:
+                                response_text = f"API Error Code: {resp.status_code} - {resp.text}"
+                        except Exception as e:
+                            response_text = f"Connection failed: {e}"
+                    st.markdown(response_text)
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
+
+    elif module == "Command Telemetry Center":
         st.markdown("# Security Operations Center - Command Dashboard")
         st.markdown("Aggregated telemetry across offensive recon nodes and defensive monitoring.")
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI", "Active" if groq_key else "Missing", "openai/gpt-oss-120b")
+        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "Active")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -577,57 +623,6 @@ def main():
             else:
                 st.warning("Please provide an indicator.")
 
-    elif module == "Groq AI Cyber & Exploit Assistant":
-        st.markdown("# Groq AI Cyber Security & Exploit Assistant")
-        if not groq_key:
-            st.error("Groq API Key is missing in secrets.")
-        else:
-            mode = st.selectbox(
-                "Select AI Assistant Mode",
-                [
-                    "General Cybersecurity Consulting & Questions",
-                    "Exploit Chain & WAF Bypass Strategy",
-                    "Vulnerability Code Review & Patching",
-                    "SOC Incident Response Playbook"
-                ]
-            )
-            
-            prompt = st.text_area("Enter your query or challenge:", placeholder="e.g., Explain how JWT signature bypass works or give WAF bypass for SQLi...")
-            
-            if st.button("Submit to Groq AI", type="primary", use_container_width=True):
-                if prompt:
-                    with st.spinner("Processing via Groq LLM..."):
-                        try:
-                            system_instruction = "You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor."
-                            if "Exploit" in mode:
-                                system_instruction = "You are an elite Offensive Security Engineer specializing in payload mutation and WAF bypass."
-                            elif "Code Review" in mode:
-                                system_instruction = "You are a Senior Application Security Auditor specializing in secure code review and patch generation."
-                            elif "SOC Incident" in mode:
-                                system_instruction = "You are a Tier 3 SOC Incident Commander providing rigorous containment playbooks."
-
-                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
-                            payload = {
-                                'model': 'openai/gpt-oss-120b',
-                                'messages': [
-                                    {'role': 'system', 'content': system_instruction},
-                                    {'role': 'user', 'content': prompt}
-                                ],
-                                'temperature': 0.6,
-                                'max_tokens': 1500
-                            }
-                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
-                            if resp.status_code == 200:
-                                st.success("Response Generated Successfully.")
-                                st.markdown("---")
-                                st.markdown(resp.json()['choices'][0]['message']['content'])
-                            else:
-                                st.error(f"API Error Code: {resp.status_code} - {resp.text}")
-                        except Exception as e:
-                            st.error(f"Connection failed: {e}")
-                else:
-                    st.warning("Please enter a query or prompt.")
-
     elif module == "Offensive Encoder & Hasher":
         st.markdown("# Offensive Payload Encoder, Decoder & Hasher")
         input_text = st.text_input("Input String / Payload", placeholder="Enter text to encode, decode, or hash...")
@@ -670,7 +665,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Assistant:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
