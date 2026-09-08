@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """
-🛡️ MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v5.8 - FULL PRODUCTION
+#!/usr/bin/env python3
+"""
+🛡️ MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.0 - FULL SCALE PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
-- Live VirusTotal & AbuseIPDB Threat Intelligence Triage
+- Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP safe)
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
-- Groq AI Exploit Chain, Payload Mutation & WAF Bypass Assistant
-- SQLite Persistence & Scan History Tracking
+- Multi-Mode Groq AI Assistant (General, Exploit/WAF, Code Review, SOC Playbooks)
+- Offensive Payload Encoder, Decoder & Hashing Utility
+- Automated Finding Report Exporter (JSON / Markdown)
+- SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -29,6 +33,8 @@ import ssl
 import dns.resolver
 import re
 import urllib.parse
+import base64
+import hashlib
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -57,7 +63,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & NVD INTELLIGENCE ENGINES
+# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -66,8 +72,7 @@ class BugBountyReconEngine:
     @staticmethod
     def deep_recon(target: str) -> Dict[str, Any]:
         report = {'target': target, 'status_code': None, 'server': None, 'technologies': [], 'exposed_files': [], 'dns': {}}
-        
-        if not target.startswith(('http://', 'https://.')):
+        if not target.startswith(('http://', 'https://')):
             target_url = f"https://{target}"
         else:
             target_url = target
@@ -75,7 +80,7 @@ class BugBountyReconEngine:
         parsed_domain = urllib.parse.urlparse(target_url).netloc or target
         
         # 1. DNS Enumeration
-        for rtype in ['A', 'MX', 'TXT', 'NS']:
+        for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
             try:
                 answers = dns.resolver.resolve(parsed_domain, rtype)
                 report['dns'][rtype] = [str(r) for r in answers]
@@ -85,7 +90,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/4.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/5.0'
         })
         
         try:
@@ -107,12 +112,13 @@ class BugBountyReconEngine:
             if 'cloudflare' in headers_str:
                 report['technologies'].append('Cloudflare WAF / Reverse Proxy')
             if 'aws' in headers_str or 'amazon' in headers_str:
-                report['technologies'].append('Amazon AWS Infrastructure')
+                report['technologies'].append('Amazon AWS Cloud Infrastructure')
 
             fuzz_paths = [
                 '/.env', '/robots.txt', '/sitemap.xml', '/git/config', 
                 '/backup.zip', '/api/v1/users', '/swagger.ui', '/phpinfo.php',
-                '/config.json', '/auth/login', '/graphql', '/debug', '/admin'
+                '/config.json', '/auth/login', '/graphql', '/debug', '/admin',
+                '/server-status', '/xmlrpc.php', '/package.json', '/composer.json'
             ]
             
             base_origin = f"{urllib.parse.urlparse(target_url).scheme}://{urllib.parse.urlparse(target_url).netloc}"
@@ -123,7 +129,7 @@ class BugBountyReconEngine:
                     p_resp = session.get(test_url, timeout=3, verify=False)
                     if p_resp.status_code in [200, 403]:
                         if p_resp.status_code == 200 and len(p_resp.text) > 10:
-                            if any(err in p_resp.text.lower() for err in ["not found", "404 page", "does not exist"]):
+                            if any(err in p_resp.text.lower() for err in ["not found", "404 page", "does not exist", "object not found"]):
                                 continue
                         report['exposed_files'].append({
                             'path': path, 
@@ -144,7 +150,7 @@ class NVDIntelligenceClient:
         self.base_url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
         self.nvd_key = nvd_key
 
-    def search_cve(self, keyword: str, max_results: int = 10) -> List[VulnerabilityRecord]:
+    def search_cve(self, keyword: str, max_results: int = 15) -> List[VulnerabilityRecord]:
         vulnerabilities = []
         try:
             params = {'keywordSearch': keyword, 'resultsPerPage': min(max_results, 20)}
@@ -169,6 +175,11 @@ class NVDIntelligenceClient:
                         score = cvss_data.get('baseScore', 0.0)
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
+                    elif 'cvssMetricV30' in metrics:
+                        cvss_data = metrics['cvssMetricV30'][0].get('cvssData', {})
+                        score = cvss_data.get('baseScore', 0.0)
+                        severity = cvss_data.get('baseSeverity', 'UNKNOWN')
+                        vector = cvss_data.get('vectorString', 'N/A')
                         
                     vulnerabilities.append(VulnerabilityRecord(
                         cve_id=cve_id,
@@ -179,14 +190,14 @@ class NVDIntelligenceClient:
                         vector_string=vector,
                         affected_configurations=[keyword],
                         published_date=cve.get('published', '')[:10],
-                        remediation=f"Apply vendor patches or configure WAF signature for {cve_id}."
+                        remediation=f"Apply official vendor patch or configure WAF signature to mitigate {cve_id}."
                     ))
         except Exception as e:
             logger.error(f"NVD API Error: {e}")
         return vulnerabilities
 
 class ThreatIntelService:
-    """Live VirusTotal & AbuseIPDB Triage Engine"""
+    """Live VirusTotal & AbuseIPDB Triage Engine (Domain & IP Safe)"""
     def __init__(self, vt_key: str, abuse_key: str):
         self.vt_key = vt_key
         self.abuse_key = abuse_key
@@ -196,6 +207,7 @@ class ThreatIntelService:
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
+        # VirusTotal Check
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -209,21 +221,29 @@ class ThreatIntelService:
                 if resp.status_code == 200:
                     results['virustotal'] = resp.json()
                 else:
-                    results['virustotal'] = {'error': f"VT Status: {resp.status_code}"}
+                    results['virustotal'] = {'error': f"VirusTotal HTTP Status Code: {resp.status_code}"}
             except Exception as e:
                 results['virustotal'] = {'error': str(e)}
+        else:
+            results['virustotal'] = {'error': 'VirusTotal API key is not configured in secrets.'}
 
-        if self.abuse_key and is_ip:
-            try:
-                headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
-                params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
-                resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
-                if resp.status_code == 200:
-                    results['abuseipdb'] = resp.json()
-                else:
-                    results['abuseipdb'] = {'error': f"AbuseIPDB Status: {resp.status_code}"}
-            except Exception as e:
-                results['abuseipdb'] = {'error': str(e)}
+        # AbuseIPDB Check (IP validation applied to prevent JSON object errors)
+        if self.abuse_key:
+            if is_ip:
+                try:
+                    headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
+                    params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
+                    resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
+                    if resp.status_code == 200:
+                        results['abuseipdb'] = resp.json()
+                    else:
+                        results['abuseipdb'] = {'error': f"AbuseIPDB HTTP Status Code: {resp.status_code}"}
+                except Exception as e:
+                    results['abuseipdb'] = {'error': str(e)}
+            else:
+                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL (AbuseIPDB only supports IPv4/IPv6 addresses).'}
+        else:
+            results['abuseipdb'] = {'error': 'AbuseIPDB API key is not configured in secrets.'}
 
         return results
 
@@ -304,13 +324,15 @@ class PayloadRepository:
             'SQL Injection (SQLi)': [
                 "' OR '1'='1", "' OR '1'='1' --", "admin' --", 
                 "1 UNION SELECT null, null, null, null--",
-                "' AND EXTRACTVALUE(1, CONCAT(0x7e, @@version))--"
+                "' AND EXTRACTVALUE(1, CONCAT(0x7e, @@version))--",
+                "1 AND (SELECT * FROM (SELECT(SLEEP(5)))a)--"
             ],
             'Cross-Site Scripting (XSS)': [
                 "<script>alert(document.domain)</script>",
                 "\"><script>alert(document.cookie)</script>",
                 "<img src=x onerror=alert(1)>",
-                "<svg/onload=alert(1)>"
+                "<svg/onload=alert(1)>",
+                "javascript:alert(1)//"
             ],
             'Local File Inclusion (LFI)': [
                 "../../../../etc/passwd", "..%2f..%2f..%2f..%2fetc%2fpasswd",
@@ -324,7 +346,7 @@ class PayloadRepository:
         return repository.get(vector, ["No payloads defined."])
 
 class SecurityDatabase:
-    """SQLite Persistence Database"""
+    """SQLite Persistence Database for Activity Logging"""
     def __init__(self, db_path: str = "security_platform.db"):
         self.db_path = db_path
         self.init_db()
@@ -345,7 +367,7 @@ class SecurityDatabase:
             conn.commit()
             conn.close()
         except Exception as e:
-            logger.error(f"Database init error: {e}")
+            logger.error(f"Database error: {e}")
 
     def log_activity(self, module: str, target: str, status: str):
         try:
@@ -356,7 +378,7 @@ class SecurityDatabase:
             conn.commit()
             conn.close()
         except Exception as e:
-            logger.error(f"Logging error: {e}")
+            logger.error(f"Log error: {e}")
 
     def get_history(self) -> List[Dict]:
         try:
@@ -366,8 +388,7 @@ class SecurityDatabase:
             rows = cursor.fetchall()
             conn.close()
             return [{'module': r[0], 'target': r[1], 'timestamp': r[2], 'status': r[3]} for r in rows]
-        except Exception as e:
-            logger.error(f"History fetch error: {e}")
+        except Exception:
             return []
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -376,7 +397,7 @@ class SecurityDatabase:
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Enterprise Bug Bounty & SOC Suite",
+        page_title="MHZALY Enterprise Bug Bounty Suite",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -426,7 +447,8 @@ def main():
                 "🔴 Network Infrastructure Audit",
                 "🔍 Enterprise NVD Intelligence",
                 "🟠 Threat Intel & IOC Triage",
-                "🤖 Groq AI Exploit & WAF Bypass",
+                "🤖 Groq AI Cyber & Exploit Assistant",
+                "🛠️ Offensive Encoder & Hasher",
                 "📊 Activity History & Logs",
                 "⚙️ Platform Configuration"
             ]
@@ -442,9 +464,9 @@ def main():
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
-        c2.metric("NVD API Acceleration", "Active" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("AI Engine Status", "Active" if groq_key else "Not Configured", "Groq Mixtral")
-        c4.metric("Database Persistence", "SQLite", "Active")
+        c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
+        c3.metric("Groq AI", "Active" if groq_key else "Missing", "Mixtral 8x7b")
+        c4.metric("SQLite DB", "Connected", "Active")
         
         st.markdown("---")
         st.subheader("Platform Capabilities Overview")
@@ -452,8 +474,9 @@ def main():
         * **Target Recon & Fuzzing:** Automated technology stack fingerprinting and sensitive backup file discovery.
         * **Infrastructure Audit:** Deep DNS harvesting, port socket scanning, SSL checks, and HTTP headers security analysis.
         * **Enterprise NVD Research:** NIST CVE database integration with accelerated API key rate limits.
-        * **Threat Intelligence Triage:** Live VirusTotal and AbuseIPDB indicator correlation.
-        * **AI Exploit Assistant:** Custom payload mutation, WAF bypass generation, and incident playbook drafting.
+        * **Threat Intelligence Triage:** Live VirusTotal and AbuseIPDB indicator correlation with domain/IP safety.
+        * **AI Cyber Assistant:** Multi-mode assistant for general consulting, WAF bypass, code reviews, and SOC playbooks.
+        * **Offensive Encoder:** Built-in Base64, URL encoding, and cryptographic hashing tools.
         """)
 
     elif module == "🎯 Bug Bounty Recon & Fuzzing":
@@ -493,6 +516,15 @@ def main():
                     exposed = recon.get('exposed_files', [])
                     if exposed:
                         st.dataframe(pd.DataFrame(exposed), use_container_width=True)
+                        
+                        # Export Option
+                        json_report = json.dumps(recon, indent=2)
+                        st.download_button(
+                            "📥 Export Recon Report (JSON)",
+                            data=json_report,
+                            file_name=f"recon_{target_input.replace('/', '_')}.json",
+                            mime="application/json"
+                        )
                     else:
                         st.info("No common sensitive files discovered on standard paths.")
             else:
@@ -569,7 +601,7 @@ def main():
 
     elif module == "🟠 Threat Intel & IOC Triage":
         st.markdown("# 🟠 Live Threat Intelligence & IOC Triage")
-        indicator = st.text_input("Enter Indicator (IP Address, Domain, or URL)", placeholder="e.g., 8.8.8.8")
+        indicator = st.text_input("Enter Indicator (IP Address, Domain, or URL)", placeholder="e.g., 8.8.8.8 or example.com")
         
         if st.button("Run Threat Triage", type="primary", use_container_width=True):
             if indicator:
@@ -591,40 +623,93 @@ def main():
                         if abuse_key:
                             st.json(report['abuseipdb'])
                         else:
-                            st.info("AbuseIPDB API Key not configured or indicator is not an IP.")
+                            st.info("AbuseIPDB API Key not configured or skipped for non-IP input.")
             else:
                 st.warning("Please provide an indicator.")
 
-    elif module == "🤖 Groq AI Exploit & WAF Bypass":
-        st.markdown("# 🤖 Groq AI Exploit Chain & WAF Bypass Assistant")
+    elif module == "🤖 Groq AI Cyber & Exploit Assistant":
+        st.markdown("# 🤖 Groq AI Cyber Security & Exploit Assistant")
+        st.markdown("Ask general cybersecurity questions, request exploit vectors, or build WAF bypass chains.")
+        
         if not groq_key:
             st.error("Groq API Key is missing in secrets.")
         else:
-            prompt = st.text_area("Describe Filtering Challenge or Target Context:", placeholder="e.g., XSS payload blocked by WAF. Give obfuscated vectors.")
-            if st.button("Generate Strategy", type="primary", use_container_width=True):
+            mode = st.selectbox(
+                "Select AI Assistant Mode",
+                [
+                    "🌐 General Cybersecurity Consulting & Questions",
+                    "🎯 Exploit Chain & WAF Bypass Strategy",
+                    "🔍 Vulnerability Code Review & Patching",
+                    "🚨 SOC Incident Response Playbook"
+                ]
+            )
+            
+            prompt = st.text_area("Enter your query or challenge:", placeholder="e.g., Explain how JWT signature bypass works or give WAF bypass for SQLi...")
+            
+            if st.button("Submit to Groq AI", type="primary", use_container_width=True):
                 if prompt:
-                    with st.spinner("Generating strategy via Groq LLM..."):
+                    with st.spinner("Processing via Groq Mixtral LLM..."):
                         try:
+                            system_instruction = "You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor."
+                            if "Exploit" in mode:
+                                system_instruction = "You are an elite Offensive Security Engineer specializing in payload mutation and WAF bypass."
+                            elif "Code Review" in mode:
+                                system_instruction = "You are a Senior Application Security Auditor specializing in secure code review and patch generation."
+                            elif "SOC Incident" in mode:
+                                system_instruction = "You are a Tier 3 SOC Incident Commander providing rigorous containment playbooks."
+
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
                                 'model': 'mixtral-8x7b-32768',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Red Team operator and bug bounty researcher specializing in payload mutation and WAF bypass.'},
+                                    {'role': 'system', 'content': system_instruction},
                                     {'role': 'user', 'content': prompt}
                                 ],
-                                'temperature': 0.5,
+                                'temperature': 0.6,
                                 'max_tokens': 1500
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
                             if resp.status_code == 200:
-                                st.success("Strategy Generated.")
+                                st.success("Response Generated Successfully.")
+                                st.markdown("---")
                                 st.markdown(resp.json()['choices'][0]['message']['content'])
                             else:
-                                st.error(f"API Error: {resp.status_code}")
+                                st.error(f"API Error Code: {resp.status_code} - {resp.text}")
                         except Exception as e:
-                            st.error(f"Error: {e}")
+                            st.error(f"Connection failed: {e}")
                 else:
-                    st.warning("Please enter a prompt.")
+                    st.warning("Please enter a query or prompt.")
+
+    elif module == "🛠️ Offensive Encoder & Hasher":
+        st.markdown("# 🛠️ Offensive Payload Encoder, Decoder & Hasher")
+        st.markdown("Quickly encode payloads or hash strings during bug bounty engagements.")
+        
+        input_text = st.text_area("Input String / Payload", placeholder="Enter text to encode, decode, or hash...")
+        
+        col_enc1, col_enc2 = st.columns(2)
+        with col_enc1:
+            if st.button("Base64 Encode", use_container_width=True):
+                if input_text:
+                    encoded = base64.b64encode(input_text.encode()).decode()
+                    st.code(encoded)
+            if st.button("URL Encode", use_container_width=True):
+                if input_text:
+                    encoded = urllib.parse.quote(input_text)
+                    st.code(encoded)
+        with col_enc2:
+            if st.button("Base64 Decode", use_container_width=True):
+                if input_text:
+                    try:
+                        decoded = base64.b64decode(input_text.encode()).decode()
+                        st.code(decoded)
+                    except Exception as e:
+                        st.error(f"Decoding error: {e}")
+            if st.button("Generate Hashes (MD5 / SHA256)", use_container_width=True):
+                if input_text:
+                    md5_h = hashlib.md5(input_text.encode()).hexdigest()
+                    sha_h = hashlib.sha256(input_text.encode()).hexdigest()
+                    st.markdown(f"**MD5:** `{md5_h}`")
+                    st.markdown(f"**SHA256:** `{sha_h}`")
 
     elif module == "📊 Activity History & Logs":
         st.markdown("# 📊 Activity History & SQLite Audit Logs")
@@ -632,16 +717,15 @@ def main():
         if history:
             st.dataframe(pd.DataFrame(history), use_container_width=True)
         else:
-            st.info("No recorded activity logs found in database.")
+            st.info("No recorded activity logs found.")
 
     elif module == "⚙️ Platform Configuration":
         st.markdown("# ⚙️ Platform Telemetry & API Status")
-        st.write("✅ **Recon & Endpoint Fuzzing Engine:** Operational")
-        st.write(f"{'✅' if nvd_key else '⚠️'} **NVD API Key:** {'Configured & Accelerated' if nvd_key else 'Not configured (Standard Public Limits)'}")
+        st.write(f"{'✅' if nvd_key else '⚠️'} **NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"{'✅' if vt_key else '❌'} **VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"{'✅' if abuse_key else '❌'} **AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"{'✅' if groq_key else '❌'} **Groq AI Assistant:** {'Active (Mixtral 8x7b)' if groq_key else 'Missing'}")
-        st.write("✅ **SQLite Persistence:** Initialized")
+        st.write(f"{'✅' if groq_key else '❌'} **Groq AI Assistant:** {'Active' if groq_key else 'Missing'}")
+        st.write("✅ **SQLite Database:** Initialized")
 
 if __name__ == "__main__":
     main()
