@@ -275,7 +275,7 @@ class AdvancedReconEngine:
         report = {'dns': {}, 'ports': [], 'ssl': {'valid': False}, 'headers': {}}
         try:
             clean_domain = domain.replace('https://', '').replace('http://', '').split('/')[0]
-            for rtype in ['A', 'AAAA', 'MX', 'NS', 'TXT', 'SOA']:
+            for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
                 try:
                     answers = dns.resolver.resolve(clean_domain, rtype)
                     report['dns'][rtype] = [str(r) for r in answers]
@@ -558,7 +558,7 @@ Automated intelligence gathering was completed against `{pipeline_target}`. The 
 - **Discovered Endpoints & Files:**
 {exposed_md}
 
-## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS $\ge 4.0$)
+## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS >= 4.0)
 {cve_list_md}
 
 ## 5. AI Architectural Security Analysis & Hardening Recommendations
@@ -828,7 +828,7 @@ Automated intelligence gathering was completed against `{pipeline_target}`. The 
                 if input_text:
                     md5_h = hashlib.md5(input_text.encode()).hexdigest()
                     sha_h = hashlib.sha256(input_text.encode()).hexdigest()
-                    st.markdown(fww"**MD5:** `{md5_h}`")
+                    st.markdown(f"**MD5:** `{md5_h}`")
                     st.markdown(f"**SHA256:** `{sha_h}`")
 
     elif module == "Activity History & Logs":
