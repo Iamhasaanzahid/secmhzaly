@@ -1,13 +1,13 @@
-#!/usr/init/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.3 - FULL STABLE EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v11.0 - ADVANCED SOC & TRIAGE EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
+- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible API)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
-- Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP Safe Guard)
+- Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Structured Parsing
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder & Hashing Utility
 - SQLite Persistence & Audit Log History Tracking
@@ -88,7 +88,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/8.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/9.0'
         })
         
         try:
@@ -195,16 +195,24 @@ class NVDIntelligenceClient:
         return vulnerabilities
 
 class ThreatIntelService:
-    """Live VirusTotal & AbuseIPDB Triage Engine (Strictly Domain & IP Safe)"""
+    """Advanced Threat Intelligence & IOC Triage Engine with Granular Parsing"""
     def __init__(self, vt_key: str, abuse_key: str):
         self.vt_key = vt_key
         self.abuse_key = abuse_key
 
     def triage_indicator(self, indicator: str) -> Dict[str, Any]:
-        results = {'indicator': indicator, 'virustotal': None, 'abuseipdb': None}
+        results = {
+            'indicator': indicator, 
+            'vt_raw': None, 
+            'vt_summary': {'malicious': 0, 'suspicious': 0, 'harmless': 0, 'undetected': 0, 'reputation': 0, 'tags': [], 'registrar': 'N/A'},
+            'abuse_raw': None,
+            'abuse_summary': {'score': 0, 'reports': 0, 'country': 'N/A', 'isp': 'N/A', 'lastReported': 'N/A'}
+        }
+        
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
+        # 1. VirusTotal Request & Detailed Parsing
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -214,32 +222,47 @@ class ThreatIntelService:
                     url = f"https://www.virustotal.com/api/v3/ip_addresses/{indicator}"
                 else:
                     url = f"https://www.virustotal.com/api/v3/domains/{indicator}"
+                
                 resp = requests.get(url, headers=headers, timeout=10)
                 if resp.status_code == 200:
-                    results['virustotal'] = resp.json()
+                    vt_json = resp.json()
+                    results['vt_raw'] = vt_json
+                    
+                    attrs = vt_json.get('data', {}).get('attributes', {})
+                    stats = attrs.get('last_analysis_stats', {})
+                    
+                    results['vt_summary']['malicious'] = stats.get('malicious', 0)
+                    results['vt_summary']['suspicious'] = stats.get('suspicious', 0)
+                    results['vt_summary']['harmless'] = stats.get('harmless', 0)
+                    results['vt_summary']['undetected'] = stats.get('undetected', 0)
+                    results['vt_summary']['reputation'] = attrs.get('reputation', 0)
+                    results['vt_summary']['tags'] = attrs.get('tags', [])
+                    results['vt_summary']['registrar'] = attrs.get('registrar', attrs.get('as_owner', 'N/A'))
                 else:
-                    results['virustotal'] = {'error': f"VirusTotal HTTP Status Code: {resp.status_code}"}
+                    results['vt_summary']['error'] = f"VT HTTP Status: {resp.status_code}"
             except Exception as e:
-                results['virustotal'] = {'error': str(e)}
-        else:
-            results['virustotal'] = {'error': 'VirusTotal API key is not configured in secrets.'}
+                results['vt_summary']['error'] = str(e)
 
-        if self.abuse_key:
-            if is_ip:
-                try:
-                    headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
-                    params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
-                    resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
-                    if resp.status_code == 200:
-                        results['abuseipdb'] = resp.json()
-                    else:
-                        results['abuseipdb'] = {'error': f"AbuseIPDB HTTP Status Code: {resp.status_code}"}
-                except Exception as e:
-                    results['abuseipdb'] = {'error': str(e)}
-            else:
-                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL (AbuseIPDB only accepts IPv4/IPv6 addresses).'}
-        else:
-            results['abuseipdb'] = {'error': 'AbuseIPDB API key is not configured in secrets.'}
+        # 2. AbuseIPDB Request & Detailed Parsing (Strictly IP Safe)
+        if self.abuse_key and is_ip:
+            try:
+                headers = {'Key': self.abuse_key, 'Accept': 'application/json'}
+                params = {'ipAddress': indicator, 'maxAgeInDays': 90, 'verbose': True}
+                resp = requests.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10)
+                if resp.status_code == 200:
+                    abuse_json = resp.json()
+                    results['abuse_raw'] = abuse_json
+                    data = abuse_json.get('data', {})
+                    
+                    results['abuse_summary']['score'] = data.get('abuseConfidenceScore', 0)
+                    results['abuse_summary']['reports'] = data.get('totalReports', 0)
+                    results['abuse_summary']['country'] = data.get('countryCode', 'N/A')
+                    results['abuse_summary']['isp'] = data.get('isp', 'N/A')
+                    results['abuse_summary']['lastReported'] = data.get('lastReportedAt', 'Never')
+                else:
+                    results['abuse_summary']['error'] = f"AbuseIPDB Status: {resp.status_code}"
+            except Exception as e:
+                results['abuse_summary']['error'] = str(e)
 
         return results
 
@@ -594,32 +617,62 @@ def main():
                 st.warning("Please enter a search keyword.")
 
     elif module == "Threat Intel & IOC Triage":
-        st.markdown("# Live Threat Intelligence & IOC Triage")
+        st.markdown("# 🛡️ Live Threat Intelligence & IOC Triage")
+        st.markdown("Analyze IP addresses, domains, or URLs against VirusTotal and AbuseIPDB feeds with granular parsing.")
+        
         indicator = st.text_input("Enter Indicator (IP Address, Domain, or URL)", placeholder="e.g., 8.8.8.8 or example.com")
         
-        if st.button("Run Threat Triage", type="primary", use_container_width=True):
+        if st.button("Run Threat Triage Analysis", type="primary", use_container_width=True):
             if indicator:
-                with st.spinner("Querying live threat feeds..."):
+                with st.spinner(f"Querying threat intelligence feeds for `{indicator}`..."):
                     ti = ThreatIntelService(vt_key, abuse_key)
                     report = ti.triage_indicator(indicator)
                     db.log_activity("Threat Intel Triage", indicator, "Completed")
                     st.success("Triage Analysis Complete.")
                     
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.subheader("VirusTotal Intelligence")
-                        if vt_key:
-                            st.json(report['virustotal'])
+                    st.markdown("---")
+                    col_vt, col_abuse = st.columns(2)
+                    
+                    with col_vt:
+                        st.subheader("🌐 VirusTotal Security Telemetry")
+                        vt_sum = report['vt_summary']
+                        if 'error' in vt_sum:
+                            st.error(vt_sum['error'])
                         else:
-                            st.info("VirusTotal API Key not configured.")
-                    with c2:
-                        st.subheader("AbuseIPDB Reputation")
-                        if abuse_key:
-                            st.json(report['abuseipdb'])
+                            m_count = vt_sum['malicious']
+                            s_count = vt_sum['suspicious']
+                            h_count = vt_sum['harmless']
+                            
+                            st.metric("Malicious Detections", m_count, delta="Threat Flag" if m_count > 0 else "Clean", delta_color="inverse" if m_count > 0 else "normal")
+                            st.metric("Suspicious Flags", s_count)
+                            st.metric("Harmless Engines", h_count)
+                            st.metric("Community Reputation Score", vt_sum['reputation'])
+                            st.write(f"**Owner / Registrar / ASN:** `{vt_sum['registrar']}`")
+                            
+                            with st.expander("View Full VirusTotal Raw JSON"):
+                                st.json(report['vt_raw'])
+                                
+                    with col_abuse:
+                        st.subheader("🚨 AbuseIPDB Reputation Telemetry")
+                        abuse_sum = report['abuse_summary']
+                        if 'error' in abuse_sum:
+                            st.error(abuse_sum['error'])
+                        elif 'info' in abuse_sum:
+                            st.info(abuse_sum['info'])
                         else:
-                            st.info("AbuseIPDB API Key not configured or skipped.")
+                            score = abuse_sum['score']
+                            reports = abuse_sum['reports']
+                            
+                            st.metric("Abuse Confidence Score", f"{score}%", delta="High Risk" if score > 50 else "Low Risk", delta_color="inverse" if score > 50 else "normal")
+                            st.metric("Total Abuse Reports", reports)
+                            st.write(f"**Country Location:** `{abuse_sum['country']}`")
+                            st.write(f"**ISP / Network:** `{abuse_sum['isp']}`")
+                            st.write(f"**Last Reported:** `{abuse_sum['lastReported']}`")
+                            
+                            with st.expander("View Full AbuseIPDB Raw JSON"):
+                                st.json(report['abuse_raw'])
             else:
-                st.warning("Please provide an indicator.")
+                st.warning("Please provide a valid indicator.")
 
     elif module == "Offensive Encoder & Hasher":
         st.markdown("# Offensive Payload Encoder, Decoder & Hasher")
