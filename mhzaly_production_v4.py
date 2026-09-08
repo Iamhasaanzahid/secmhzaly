@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.6 - ULTIMATE PRODUCTION EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.7 - PERFECTED PRODUCTION EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Pipeline with Soft-404 Filtering & Security Analysis
+- 100% Autonomous 4-API Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Real-Time Target Fingerprinting & Smart Endpoint Fuzzing
-- NVD v2.0 REST Client with Accelerated API Key Support & Smart Fallbacks
+- NVD v2.0 REST Client with Accelerated API Key Support & High-Severity Filtering
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
@@ -64,7 +64,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (WITH SOFT-404 FILTERING)
+# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (WITH REFINED NVD THRESHOLDS)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -86,7 +86,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.6'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.7'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -150,7 +150,7 @@ class NVDIntelligenceClient:
     def search_cve(self, keyword: str, max_results: int = 15) -> List[VulnerabilityRecord]:
         vulnerabilities = []
         try:
-            params = {'keywordSearch': keyword, 'resultsPerPage': min(max_results, 25)}
+            params = {'keywordSearch': keyword, 'resultsPerPage': min(max_results, 30)}
             headers = {}
             if self.nvd_key:
                 headers['apiKey'] = self.nvd_key
@@ -181,17 +181,19 @@ class NVDIntelligenceClient:
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
                         
-                    vulnerabilities.append(VulnerabilityRecord(
-                        cve_id=cve_id,
-                        title=cve_id,
-                        description=desc,
-                        severity=severity.upper(),
-                        cvss_score=score,
-                        vector_string=vector,
-                        affected_configurations=[keyword],
-                        published_date=str(cve.get('published', ''))[:10],
-                        remediation=f"Apply official vendor patch or configure WAF signature to mitigate {cve_id}."
-                    ))
+                    # Filter out zero-score or extremely old irrelevant noise to maintain high precision
+                    if score >= 4.0:
+                        vulnerabilities.append(VulnerabilityRecord(
+                            cve_id=cve_id,
+                            title=cve_id,
+                            description=desc,
+                            severity=severity.upper(),
+                            cvss_score=score,
+                            vector_string=vector,
+                            affected_configurations=[keyword],
+                            published_date=str(cve.get('published', ''))[:10],
+                            remediation=f"Apply official vendor patch or configure WAF signature to mitigate {cve_id}."
+                        ))
         except Exception as e:
             logger.error(f"NVD API Error: {e}")
         return vulnerabilities
@@ -453,7 +455,7 @@ def main():
 
     if module == "⚡ Unified 4-API Pipeline & Report":
         st.markdown("# ⚡ Autonomous 4-API Pipeline & Security Analysis Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, automatically filters soft-404 false positives, correlates NVD data, and tasks Groq AI to perform an in-depth security analysis report.")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, filters soft-404 false positives, applies strict CVSS thresholding for NVD CVEs, and tasks Groq AI to perform an in-depth security analysis report.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
@@ -485,7 +487,7 @@ def main():
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
                     c2.metric("Abuse Confidence Score", f"{ti_res['abuse_summary']['score']}%")
-                    c3.metric("NVD CVE Records Found", len(cve_res))
+                    c3.metric("Filtered NVD CVEs", len(cve_res))
 
                     ai_analysis_text = "AI analysis skipped or key missing."
                     if groq_key:
@@ -522,7 +524,7 @@ def main():
                         except Exception as e:
                             ai_analysis_text = f"Connection failed: {e}"
 
-                    cve_list_md = "\n".join([f"- **{c.cve_id}** (CVSS: {c.cvss_score} - {c.severity}): {c.description}" for c in cve_res]) if cve_res else "No direct matching CVE entries found for keyword."
+                    cve_list_md = "\n".join([f"- **{c.cve_id}** (CVSS: {c.cvss_score} - {c.severity}): {c.description}" for c in cve_res]) if cve_res else "No high-severity matching CVE entries found."
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
@@ -556,7 +558,7 @@ Automated intelligence gathering was completed against `{pipeline_target}`. The 
 - **Discovered Endpoints & Files:**
 {exposed_md}
 
-## 4. Correlated Vulnerabilities (NIST NVD v2.0)
+## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS $\ge 4.0$)
 {cve_list_md}
 
 ## 5. AI Architectural Security Analysis & Hardening Recommendations
@@ -826,7 +828,7 @@ Automated intelligence gathering was completed against `{pipeline_target}`. The 
                 if input_text:
                     md5_h = hashlib.md5(input_text.encode()).hexdigest()
                     sha_h = hashlib.sha256(input_text.encode()).hexdigest()
-                    st.markdown(f"**MD5:** `{md5_h}`")
+                    st.markdown(fww"**MD5:** `{md5_h}`")
                     st.markdown(f"**SHA256:** `{sha_h}`")
 
     elif module == "Activity History & Logs":
