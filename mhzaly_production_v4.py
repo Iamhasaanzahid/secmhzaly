@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.0 - ULTIMATE EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.2 - STABLE CHATBOT EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible API)
+- Interactive AI Security Chatbot (Powered by Groq Llama 3.1 8B Instant)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP Safe Guard)
@@ -205,7 +205,6 @@ class ThreatIntelService:
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
-        # VirusTotal Check (Accepts IP, Domain, or URL)
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -225,7 +224,6 @@ class ThreatIntelService:
         else:
             results['virustotal'] = {'error': 'VirusTotal API key is not configured in secrets.'}
 
-        # AbuseIPDB Check (Safeguarded: Only executes if input is a valid IP address)
         if self.abuse_key:
             if is_ip:
                 try:
@@ -453,7 +451,7 @@ def main():
                         try:
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'llama-3.3-70b-versatile',
+                                'model': 'llama-3.1-8b-instant',
                                 'messages': [
                                     {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor. Provide detailed code, payloads, and defense mechanisms.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
@@ -478,7 +476,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "llama-3.3-70b-versatile")
+        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "llama-3.1-8b-instant")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -619,7 +617,7 @@ def main():
                         if abuse_key:
                             st.json(report['abuseipdb'])
                         else:
-                            st.info("AbuseIPDB API Key not configured or skipped for non-IP input.")
+                            st.info("AbuseIPDB API Key not configured or skipped.")
             else:
                 st.warning("Please provide an indicator.")
 
@@ -665,7 +663,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.1-8b-instant)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
