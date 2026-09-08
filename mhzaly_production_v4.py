@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.0 - PURPLE TEAM UNIFIED EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.1 - CLEAN SEPARATED EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
-- Interactive AI Security Chatbot & Automated Sigma Rule Generator (Powered by Groq GPT-OSS 120B)
+- Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
+- Separate Automated Sigma Rule & YARA Detection Generator Module
 - Autonomous Target Fingerprinting, Smart Endpoint Fuzzing & Log Parsing Simulator
 - NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement & Safety Filters
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
@@ -86,7 +87,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.0'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.1'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -436,8 +437,9 @@ def main():
             "Purple Team Hub Menu",
             [
                 "⚡ Autonomous AI-Agent Red/Blue Pipeline",
+                "🤖 AI Security Chatbot",
                 "🛡️ Blue Team SOC Log & SIEM Simulator",
-                "🤖 AI Security Chatbot & Sigma Gen",
+                "📊 Automated Sigma Rule Generator",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
                 "Network Infrastructure Audit",
@@ -582,6 +584,51 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
             else:
                 st.warning("Please specify a target for the pipeline report.")
 
+    elif module == "🤖 AI Security Chatbot":
+        st.markdown("# AI Security Operations & Bug Bounty Chatbot")
+        st.markdown("Ask anything about security, exploit vectors, WAF bypass, or defense strategies. Powered by Groq AI.")
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hello operator! I am your MHZALY AI Security Assistant backed by your active API keys. How can I assist your purple team or security operations today?"}
+            ]
+
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        if prompt := st.chat_input("Ask a security query or request a playbook..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+                if not groq_key:
+                    response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
+                    st.markdown(response_text)
+                else:
+                    with st.spinner("Analyzing via Groq AI..."):
+                        try:
+                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                            payload = {
+                                'model': 'openai/gpt-oss-120b',
+                                'messages': [
+                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Purple Team Mentor, and Red/Blue Team Advisor specializing in security assessments.'},
+                                    *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
+                                ],
+                                'temperature': 0.6,
+                                'max_tokens': 1500
+                            }
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            if resp.status_code == 200:
+                                response_text = resp.json()['choices'][0]['message']['content']
+                            else:
+                                response_text = f"API Error Code: {resp.status_code} - {resp.text}"
+                        except Exception as e:
+                            response_text = f"Connection failed: {e}"
+                    st.markdown(response_text)
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
+
     elif module == "🛡️ Blue Team SOC Log & SIEM Simulator":
         st.markdown("# Blue Team SOC Log Parsing & Threat Detection Simulator")
         st.markdown("Paste raw server access logs or Windows Event logs below to simulate SIEM parsing and anomaly detection.")
@@ -593,7 +640,6 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                 with st.spinner("Running heuristic parsing and threat detection..."):
                     st.success("Log parsing complete.")
                     
-                    # Heuristic detection patterns
                     lines = sample_log.split('\n')
                     suspicious_hits = []
                     for idx, line in enumerate(lines, 1):
@@ -615,84 +661,38 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
             else:
                 st.warning("Please paste some log data to analyze.")
 
-    elif module == "🤖 AI Security Chatbot & Sigma Gen":
-        st.markdown("# AI Security Chatbot & Automated Sigma Rule Generator")
-        st.markdown("Chat with Groq AI or request automated Sigma detection rules for any CVE or threat pattern.")
-
-        tab_chat, tab_sigma = st.tabs(["AI Security Chatbot", "Automated Sigma Rule Generator"])
+    elif module == "📊 Automated Sigma Rule Generator":
+        st.markdown("# Automated Sigma Rule & YARA Detection Generator")
+        st.markdown("Generate production-ready SIEM detection rules for any CVE, IoC, or attack pattern using Groq AI.")
         
-        with tab_chat:
-            if "messages" not in st.session_state:
-                st.session_state.messages = [
-                    {"role": "assistant", "content": "Hello operator! I am your MHZALY Purple Team AI Assistant. How can I assist your security operations today?"}
-                ]
-
-            for message in st.session_state.messages:
-                with st.chat_message(message["role"]):
-                    st.markdown(message["content"])
-
-            if prompt := st.chat_input("Ask a security query or request a playbook..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-
-                with st.chat_message("assistant"):
-                    if not groq_key:
-                        response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
-                        st.markdown(response_text)
-                    else:
-                        with st.spinner("Analyzing via Groq AI..."):
-                            try:
-                                headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
-                                payload = {
-                                    'model': 'openai/gpt-oss-120b',
-                                    'messages': [
-                                        {'role': 'system', 'content': 'You are an elite Purple Team Security Expert and SOC Advisor.'},
-                                        *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
-                                    ],
-                                    'temperature': 0.6,
-                                    'max_tokens': 1500
-                                }
-                                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
-                                if resp.status_code == 200:
-                                    response_text = resp.json()['choices'][0]['message']['content']
-                                else:
-                                    response_text = f"API Error Code: {resp.status_code} - {resp.text}"
-                            except Exception as e:
-                                response_text = f"Connection failed: {e}"
-                        st.markdown(response_text)
-                st.session_state.messages.append({"role": "assistant", "content": response_text})
-                
-        with tab_sigma:
-            st.markdown("### Generate SIEM Detection Rules (Sigma / YARA)")
-            cve_input = st.text_input("Enter CVE ID or Attack Description", placeholder="e.g., CVE-2021-44228 or Path Traversal Attack")
-            if st.button("Generate Sigma Detection Rule", type="primary"):
-                if cve_input:
-                    if not groq_key:
-                        st.error("Groq API Key is missing in secrets.")
-                    else:
-                        with st.spinner("Generating professional Sigma detection rule via Groq AI..."):
-                            try:
-                                headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
-                                payload = {
-                                    'model': 'openai/gpt-oss-120b',
-                                    'messages': [
-                                        {'role': 'system', 'content': 'You are a senior Blue Team threat hunter. Generate a valid, production-ready Sigma detection rule in YAML format for the requested vulnerability or threat vector.'},
-                                        {'role': 'user', 'content': f"Generate a Sigma rule for: {cve_input}"}
-                                    ],
-                                    'temperature': 0.3,
-                                    'max_tokens': 1000
-                                }
-                                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
-                                if resp.status_code == 200:
-                                    sigma_res = resp.json()['choices'][0]['message']['content']
-                                    st.code(sigma_res, language='yaml')
-                                else:
-                                    st.error(f"API Error: {resp.status_code}")
-                            except Exception as e:
-                                st.error(f"Error: {e}")
+        cve_input = st.text_input("Enter CVE ID or Attack Description", placeholder="e.g., CVE-2021-44228 or Path Traversal Attack")
+        if st.button("Generate Sigma Detection Rule", type="primary"):
+            if cve_input:
+                if not groq_key:
+                    st.error("Groq API Key is missing in secrets.")
                 else:
-                    st.warning("Please enter a CVE ID or attack description.")
+                    with st.spinner("Generating professional Sigma detection rule via Groq AI..."):
+                        try:
+                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                            payload = {
+                                'model': 'openai/gpt-oss-120b',
+                                'messages': [
+                                    {'role': 'system', 'content': 'You are a senior Blue Team threat hunter. Generate a valid, production-ready Sigma detection rule in YAML format for the requested vulnerability or threat vector.'},
+                                    {'role': 'user', 'content': f"Generate a Sigma rule for: {cve_input}"}
+                                ],
+                                'temperature': 0.3,
+                                'max_tokens': 1000
+                            }
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            if resp.status_code == 200:
+                                sigma_res = resp.json()['choices'][0]['message']['content']
+                                st.code(sigma_res, language='yaml')
+                            else:
+                                st.error(f"API Error: {resp.status_code}")
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+            else:
+                st.warning("Please enter a CVE ID or attack description.")
 
     elif module == "Command Telemetry Center":
         st.markdown("# Purple Team Operations Center - Command Dashboard")
