@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.5 - ENTERPRISE PRODUCTION EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.6 - ULTIMATE PRODUCTION EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Pipeline with Bulletproof Exception Safety & Security Analysis
+- 100% Autonomous 4-API Pipeline with Soft-404 Filtering & Security Analysis
 - Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
+- Real-Time Target Fingerprinting & Smart Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support & Smart Fallbacks
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
@@ -64,7 +64,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (100% REAL-WORLD FUNCTIONAL)
+# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (WITH SOFT-404 FILTERING)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -86,13 +86,14 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.5'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.6'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
             report['server'] = resp.headers.get('Server', 'Hidden / Unknown')
             
-            body = resp.text.lower()
+            base_homepage_text = resp.text.lower()
+            body = base_homepage_text
             headers_str = str(resp.headers).lower()
             
             if 'wp-content' in body or 'wordpress' in headers_str:
@@ -123,9 +124,17 @@ class BugBountyReconEngine:
                 try:
                     p_resp = session.get(test_url, timeout=3, verify=False)
                     if p_resp.status_code in [200, 403, 401]:
-                        if p_resp.status_code == 200 and len(p_resp.text) > 10:
-                            if any(err in p_resp.text.lower() for err in ["not found", "404 page", "does not exist", "object not found"]):
+                        p_text = p_resp.text.lower()
+                        
+                        # Filter out Streamlit soft-404 pages
+                        if 'streamlit' in p_text and 'root' in p_text and len(p_text) > 500:
+                            if abs(len(p_text) - len(base_homepage_text)) < 200:
                                 continue
+                                
+                        if p_resp.status_code == 200 and len(p_text) > 10:
+                            if any(err in p_text for err in ["not found", "404 page", "does not exist", "object not found"]):
+                                continue
+                                
                         report['exposed_files'].append({'path': path, 'status': p_resp.status_code, 'size': len(p_resp.text)})
                 except Exception:
                     pass
@@ -444,7 +453,7 @@ def main():
 
     if module == "⚡ Unified 4-API Pipeline & Report":
         st.markdown("# ⚡ Autonomous 4-API Pipeline & Security Analysis Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and tasks Groq AI to perform an in-depth security analysis report.")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, automatically filters soft-404 false positives, correlates NVD data, and tasks Groq AI to perform an in-depth security analysis report.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
