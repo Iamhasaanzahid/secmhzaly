@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.1 - FULL SCALE PRODUCTION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.2 - FULL SCALE PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
@@ -432,7 +432,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI", "Active" if groq_key else "Missing", "Mixtral 8x7b")
+        c3.metric("Groq AI", "Active" if groq_key else "Missing", "llama-3.3-70b-versatile")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -596,7 +596,7 @@ def main():
             
             if st.button("Submit to Groq AI", type="primary", use_container_width=True):
                 if prompt:
-                    with st.spinner("Processing via Groq Mixtral LLM..."):
+                    with st.spinner("Processing via Groq LLM..."):
                         try:
                             system_instruction = "You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor."
                             if "Exploit" in mode:
@@ -608,7 +608,7 @@ def main():
 
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'mixtral-8x7b-32768',
+                                'model': 'llama-3.3-70b-versatile',
                                 'messages': [
                                     {'role': 'system', 'content': system_instruction},
                                     {'role': 'user', 'content': prompt}
@@ -670,7 +670,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Assistant:** {'Active' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Assistant:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
