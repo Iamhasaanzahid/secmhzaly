@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.4 - MODERN SaaS EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.5 - SECURE MULTI-USER SaaS EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
+- Dual-Operator Authentication System with Robust Fallback Dictionary (mhzaly & naqaab50)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
@@ -88,7 +89,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.4'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.5'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -402,20 +403,15 @@ def main():
     # Modern SaaS Dark Glassmorphism Styling Injection
     st.markdown("""
         <style>
-        /* Main background & typography */
         .stApp {
             background-color: #0b0f19;
             color: #f3f4f6;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
-        /* Sidebar styling */
         [data-testid="stSidebar"] {
             background-color: #111827;
             border-right: 1px solid #1f2937;
         }
-        
-        /* Glassmorphism Cards */
         .saas-card {
             background: rgba(17, 24, 39, 0.7);
             border: 1px solid rgba(75, 85, 99, 0.3);
@@ -425,8 +421,6 @@ def main():
             margin-bottom: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
-        
-        /* Custom Buttons */
         .stButton>button {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
@@ -442,8 +436,6 @@ def main():
             box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
             transform: translateY(-1px);
         }
-        
-        /* Metric Cards Customization */
         [data-testid="stMetric"] {
             background: rgba(17, 24, 39, 0.8);
             border: 1px solid rgba(59, 130, 246, 0.2);
@@ -459,8 +451,6 @@ def main():
             color: #60a5fa !important;
             font-weight: 700;
         }
-        
-        /* Inputs & Textareas */
         .stTextInput>div>div>input, .stTextArea>div>div>textarea {
             background-color: #1f2937;
             color: #f3f4f6;
@@ -471,8 +461,6 @@ def main():
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
-        
-        /* Headers styling */
         h1, h2, h3 {
             color: #f9fafb;
             font-weight: 700;
@@ -499,9 +487,14 @@ def main():
             password = st.text_input("Operator Password", type="password")
             
             if st.button("Authenticate Suite", use_container_width=True):
-                correct_user = st.secrets.get("APP_USERNAME", "admin")
-                correct_pass = st.secrets.get("APP_PASSWORD", "admin123")
-                if username == correct_user and password == correct_pass:
+                valid_users = {"mhzaly": "mhzaly11", "naqaab50": "naqaab123"}
+                try:
+                    if "users" in st.secrets:
+                        valid_users.update(dict(st.secrets["users"]))
+                except Exception:
+                    pass
+
+                if username in valid_users and valid_users[username] == password:
                     st.session_state.authenticated = True
                     st.session_state.user = username
                     st.success("Authentication successful. Initializing SaaS modules...")
