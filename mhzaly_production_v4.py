@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/init/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.2 - STABLE CHATBOT EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.3 - FULL STABLE EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Interactive AI Security Chatbot (Powered by Groq Llama 3.1 8B Instant)
+- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP Safe Guard)
@@ -451,7 +451,7 @@ def main():
                         try:
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'llama-3.1-8b-instant',
+                                'model': 'openai/gpt-oss-120b',
                                 'messages': [
                                     {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor. Provide detailed code, payloads, and defense mechanisms.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
@@ -476,7 +476,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "llama-3.1-8b-instant")
+        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -663,7 +663,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.1-8b-instant)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Chatbot:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
