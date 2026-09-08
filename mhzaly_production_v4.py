@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.8 - 100% FULLY AI-DRIVEN AGENTIC EDITION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.9 - BULLETPROOF AI AGENT EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Autonomous Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous AI-Agentic Pipeline with Self-Healing Queries & Smart CVSS Thresholds
+- 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Autonomous Target Fingerprinting & Smart Endpoint Fuzzing Loop
-- NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement
+- NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement & Safety Filters
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
 import streamlit as st
@@ -86,7 +86,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyAIHunter/16.8'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyAIHunter/16.9'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -454,7 +454,7 @@ def main():
 
     if module == "⚡ Autonomous AI-Agent Pipeline & Report":
         st.markdown("# ⚡ Fully Autonomous AI-Agent Security Pipeline")
-        st.markdown("Enter target scope. The AI Agent autonomously executes threat triage, smart fuzzing, NVD vulnerability correlation, and deep architectural exploit-chain analysis without human intervention.")
+        st.markdown("Enter target scope. The AI Agent autonomously executes threat triage, smart fuzzing, NVD vulnerability correlation, and deep architectural security review without human intervention.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
@@ -481,7 +481,7 @@ def main():
                     if not cve_res and domain_keyword != nvd_query_term:
                         cve_res = nvd.search_cve(domain_keyword, max_results=8)
 
-                    st.success("Telemetry gathered. AI Agent synthesizing exploit chains and hardening review...")
+                    st.success("Telemetry gathered. AI Agent synthesizing architectural security review and hardening guidelines...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -505,14 +505,14 @@ def main():
                                 'messages': [
                                     {
                                         'role': 'system', 
-                                        'content': 'You are an autonomous senior offensive security AI agent. Analyze the provided target telemetry, autonomously deduce complex exploit chains, identify potential business logic flaws and authorization bypasses, and output a comprehensive professional security assessment report with tactical verification steps.'
+                                        'content': 'You are an authorized enterprise cloud security architect and defensive code reviewer. Your task is strictly analytical: review the provided target telemetry, evaluate structural authorization patterns, analyze security posture and potential edge cases, and provide comprehensive defensive hardening guidelines and remediation procedures.'
                                     },
                                     {
                                         'role': 'user', 
-                                        'content': f"Perform autonomous security analysis and generate tactical exploit vectors based on this target telemetry:\n{summary_context}"
+                                        'content': f"Perform comprehensive architectural security review and generate defensive hardening guidance based on this target telemetry:\n{summary_context}"
                                     }
                                 ],
-                                'temperature': 0.6,
+                                'temperature': 0.5,
                                 'max_tokens': 2000
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=30)
@@ -532,7 +532,7 @@ def main():
 * **Target Scope:** `{pipeline_target}`
 * **Lead Operator:** `{st.session_state.user} (Autonomous AI Agent Engine)`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** FULLY AUTOMATED OFFENSIVE SECURITY INTEL
+* **Classification:** FULLY AUTOMATED SECURITY INTELLIGENCE
 
 ## 1. Executive Summary & Autonomous Scope Overview
 Automated AI-agent intelligence gathering was completed against `{pipeline_target}`. The agent analyzed reputation scores, NVD CVE mappings, and target tech vectors to synthesize attack surface posture.
@@ -560,7 +560,7 @@ Automated AI-agent intelligence gathering was completed against `{pipeline_targe
 ## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS >= 4.0)
 {cve_list_md}
 
-## 5. Autonomous AI-Agent Exploit Chain & Tactical Security Analysis
+## 5. Autonomous AI-Agent Architectural Security Analysis & Hardening Recommendations
 {ai_analysis_text}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
