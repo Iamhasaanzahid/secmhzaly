@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.2 - FULL SCALE PRODUCTION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v7.3 - FULL SCALE PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
@@ -432,7 +432,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI", "Active" if groq_key else "Missing", "llama-3.3-70b-versatile")
+        c3.metric("Groq AI", "Active" if groq_key else "Missing", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -608,7 +608,7 @@ def main():
 
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'llama-3.3-70b-versatile',
+                                'model': 'openai/gpt-oss-120b',
                                 'messages': [
                                     {'role': 'system', 'content': system_instruction},
                                     {'role': 'user', 'content': prompt}
@@ -670,7 +670,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Assistant:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Assistant:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
