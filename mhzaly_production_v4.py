@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v13.0 - FULL SCALE REPORTING EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v15.0 - DEEP SUBTLE VULN HUNTING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
+- 100% Autonomous 4-API Intelligence Pipeline with Deep Subtle Vulnerability Hunting
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Unified 4-API Intelligence Pipeline with Live AI Threat Synthesis & Explanation
-- Automated Security Finding Report Generator & Exporter (Markdown / HTML)
+- Automated Enterprise Security Report Generator & Exporter
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Parsing
@@ -90,7 +90,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/13.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/15.0'
         })
         
         try:
@@ -118,7 +118,8 @@ class BugBountyReconEngine:
                 '/.env', '/robots.txt', '/sitemap.xml', '/git/config', 
                 '/backup.zip', '/api/v1/users', '/swagger.ui', '/phpinfo.php',
                 '/config.json', '/auth/login', '/graphql', '/debug', '/admin',
-                '/server-status', '/xmlrpc.php', '/package.json', '/composer.json'
+                '/server-status', '/xmlrpc.php', '/package.json', '/composer.json',
+                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env'
             ]
             
             base_origin = f"{urllib.parse.urlparse(target_url).scheme}://{urllib.parse.urlparse(target_url).netloc}"
@@ -127,7 +128,7 @@ class BugBountyReconEngine:
                 test_url = base_origin + path
                 try:
                     p_resp = session.get(test_url, timeout=3, verify=False)
-                    if p_resp.status_code in [200, 403]:
+                    if p_resp.status_code in [200, 403, 401]:
                         if p_resp.status_code == 200 and len(p_resp.text) > 10:
                             if any(err in p_resp.text.lower() for err in ["not found", "404 page", "does not exist", "object not found"]):
                                 continue
@@ -430,8 +431,7 @@ def main():
         module = st.radio(
             "Navigation Menu",
             [
-                "⚡ Unified 4-API Pipeline",
-                "📄 Automated Report Generator",
+                "⚡ Unified 4-API Pipeline & Report",
                 "🤖 AI Security Chatbot",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
@@ -448,125 +448,118 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "⚡ Unified 4-API Pipeline":
-        st.markdown("# ⚡ Unified Multi-API Intelligence Pipeline with AI Explanation")
-        st.markdown("Synchronize **VirusTotal, AbuseIPDB, NVD, and Groq AI** to automatically scan, correlate, and explain vulnerabilities in depth.")
+    if module == "⚡ Unified 4-API Pipeline & Report":
+        st.markdown("# ⚡ Autonomous 4-API Pipeline & Deep Vulnerability Hunting Report")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, fetches real NVD vulnerabilities, uncovers subtle hidden flaws, and compiles an automated professional report.")
 
-        pipeline_target = st.text_input("Enter Target Domain, IP, or Software Keyword", placeholder="e.g., target.com or apache")
+        pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target.com or apache")
 
-        if st.button("🚀 Execute Full 4-API Automated Pipeline & AI Analysis", type="primary", use_container_width=True):
+        if st.button("🚀 Run Autonomous Pipeline & Generate Deep Report", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("Running synchronized multi-API intelligence pipeline..."):
-                    db.log_activity("Unified Pipeline", pipeline_target, "Initiated")
+                with st.spinner("Executing deep 4-API pipeline and hunting subtle bug bounty vectors..."):
+                    db.log_activity("Deep Autonomous Pipeline", pipeline_target, "Initiated")
                     
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
                     
                     nvd = NVDIntelligenceClient(nvd_key)
-                    cve_res = nvd.search_cve(pipeline_target, max_results=5)
+                    cve_res = nvd.search_cve(pipeline_target, max_results=8)
                     
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
 
-                    st.success("Pipeline executed successfully. Generating AI breakdown and explanation...")
+                    st.success("Telemetry gathered. Performing Groq AI deep subtle vulnerability analysis...")
 
                     c1, c2, c3 = st.columns(3)
-                    c1.metric("VT Malicious Hits", ti_res['vt_summary']['malicious'])
-                    c2.metric("Abuse Confidence", f"{ti_res['abuse_summary']['score']}%")
-                    c3.metric("Associated CVEs Found", len(cve_res))
+                    c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
+                    c2.metric("Abuse Confidence Score", f"{ti_res['abuse_summary']['score']}%")
+                    c3.metric("NVD CVE Records Found", len(cve_res))
 
+                    ai_analysis_text = "AI analysis skipped or key missing."
                     if groq_key:
                         summary_context = f"""
-                        Target: {pipeline_target}
+                        Target Scope: {pipeline_target}
                         VirusTotal Malicious Count: {ti_res['vt_summary']['malicious']}
-                        AbuseIPDB Score: {ti_res['abuse_summary']['score']}
-                        Technologies found: {recon_res.get('technologies', [])}
-                        Top CVEs: {[c.cve_id for c in cve_res]}
+                        AbuseIPDB Threat Score: {ti_res['abuse_summary']['score']}%
+                        Discovered Tech Stack: {recon_res.get('technologies', [])}
+                        Exposed Sensitive Files/Endpoints: {recon_res.get('exposed_files', [])}
+                        Top Correlated NVD CVEs: {[c.cve_id for c in cve_res]}
                         """
                         try:
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an expert Cybersecurity Mentor and AI Bug Bounty Analyst. Explain clearly to the operator what these findings mean, what risks exist, and how to verify them step by step.'},
-                                    {'role': 'user', 'content': f"Please analyze and explain this recon and vulnerability telemetry in detail:\n{summary_context}"}
+                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Hunter and Offensive Security Lead. Uncover real-world, subtle, and low-visibility vulnerabilities (such as subtle IDOR precursors, hidden header misconfigurations, information disclosure via endpoints, or minor logic flaws) based on the target telemetry. Give deep, actionable details and PoC steps.'},
+                                    {'role': 'user', 'content': f"Perform deep subtle vulnerability correlation and generate a penetration testing breakdown for this target:\n{summary_context}"}
                                 ],
-                                'temperature': 0.6,
-                                'max_tokens': 1500
+                                'temperature': 0.7,
+                                'max_tokens': 2000
                             }
-                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=30)
                             if resp.status_code == 200:
-                                ai_text = resp.json()['choices'][0]['message']['content']
-                                st.markdown("### 🧠 AI Detailed Explanation & Verification Guide")
-                                st.markdown(ai_text)
-                                
-                                # Store report in session state for export
-                                st.session_state.last_report = f"""# MHZALY SECURITY ASSESSMENT REPORT
-**Target:** {pipeline_target}
-**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-**Operator:** {st.session_state.user}
-
-## 1. Executive Summary & Telemetry
-- **VirusTotal Malicious Hits:** {ti_res['vt_summary']['malicious']}
-- **AbuseIPDB Confidence Score:** {ti_res['abuse_summary']['score']}%
-- **Fingerprinted Technologies:** {recon_res.get('technologies', [])}
-- **Associated CVEs:** {[c.cve_id for c in cve_res]}
-
-## 2. AI Threat Analysis & Playbook
-{ai_text}
-"""
+                                ai_analysis_text = resp.json()['choices'][0]['message']['content']
                             else:
-                                st.error(f"AI Synthesis Error: {resp.status_code} - {resp.text}")
+                                ai_analysis_text = f"API Error: {resp.status_code} - {resp.text}"
                         except Exception as e:
-                            st.error(f"AI connection error: {e}")
-                    else:
-                        st.warning("Groq API key missing; skipped AI explanation step.")
-            else:
-                st.warning("Please enter a target indicator or keyword.")
+                            ai_analysis_text = f"Connection failed: {e}"
 
-    elif module == "📄 Automated Report Generator":
-        st.markdown("# 📄 Automated Security Assessment Report Generator")
-        st.markdown("Compile your target findings, telemetry, and AI insights into a professional markdown/HTML report ready for export.")
+                    cve_list_md = "\n".join([f"- **{c.cve_id}** (CVSS: {c.cvss_score} - {c.severity}): {c.description}" for c in cve_res]) if cve_res else "No direct matching CVE entries found."
+                    exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
+                    tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-        report_target = st.text_input("Report Target Name / Organization", placeholder="e.g., target-domain.com")
-        report_author = st.text_input("Lead Security Operator", value=st.session_state.user)
-        executive_summary = st.text_area("Executive Summary / Scope Overview", placeholder="Describe the target scope and testing objective...")
-        key_findings = st.text_area("Key Vulnerabilities & Observations", placeholder="List discovered endpoints, open ports, or suspected flaws...")
-        remediation_notes = st.text_area("Remediation & Defensive Recommendations", placeholder="Enter hardening guidelines or vendor patches...")
+                    auto_report_markdown = f"""# 🛡️ MHZALY DEEP VULNERABILITY HUNTING & SECURITY REPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+* **Target Scope:** `{pipeline_target}`
+* **Lead Operator:** `{st.session_state.user}`
+* **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
+* **Classification:** BUG BOUNTY & OFFENSIVE SECURITY INTEL
 
-        if st.button("📝 Generate & Export Report", type="primary", use_container_width=True):
-            if report_target:
-                report_content = f"""# 🛡️ MHZALY ENTERPRISE SECURITY ASSESSMENT REPORT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-* **Target Scope:** `{report_target}`
-* **Lead Operator:** `{report_author}`
-* **Generation Date:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** CONFIDENTIAL / BUG BOUNTY ASSESSMENT
+## 1. Executive Summary & Recon Scope Overview
+Automated 4-API intelligence gathering was completed against `{pipeline_target}`. The pipeline combined reputation metrics, NIST NVD vulnerability records, and targeted directory/endpoint fuzzing.
+- **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
+- **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
+- **Detected Technologies:** `{tech_md}`
 
-## 1. Executive Summary
-{executive_summary if executive_summary else "No executive summary provided."}
+## 2. Threat Intelligence & Reputation Triage
+### VirusTotal Telemetry
+- **Harmless Engines:** `{ti_res['vt_summary']['harmless']}`
+- **Community Reputation:** `{ti_res['vt_summary']['reputation']}`
+- **ASN / Owner:** `{ti_res['vt_summary']['registrar']}`
 
-## 2. Technical Findings & Recon Observations
-{key_findings if key_findings else "No detailed findings recorded."}
+### AbuseIPDB Telemetry
+- **Reports Count:** `{ti_res['abuse_summary']['reports']}`
+- **Country Code:** `{ti_res['abuse_summary']['country']}`
+- **ISP:** `{ti_res['abuse_summary']['isp']}`
 
-## 3. Remediation & Hardening Roadmap
-{remediation_notes if remediation_notes else "Standard vendor patching and WAF tuning recommended."}
+## 3. Attack Surface Discovery & Exposed Endpoints
+- **HTTP Status:** `{recon_res.get('status_code', 'N/A')}`
+- **Server Banner:** `{recon_res.get('server', 'Hidden')}`
+- **Discovered Endpoints & Files:**
+{exposed_md}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-*Generated via MHZALY Bug Bounty & Security Operations Suite*
+## 4. Correlated Vulnerabilities (NIST NVD v2.0)
+{cve_list_md}
+
+## 5. AI Autonomous Deep Vulnerability & Subtle Flaw Analysis
+{ai_analysis_text}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*Generated via MHZALY Enterprise Security & Bug Bounty Platform*
 """
-                st.success("Security Report Generated Successfully.")
-                st.markdown("---")
-                st.markdown(report_content)
-                
-                st.download_button(
-                    label="📥 Download Markdown Report (.md)",
-                    data=report_content,
-                    file_name=f"security_report_{report_target.replace('/', '_')}.md",
-                    mime="text/markdown",
-                    use_container_width=True
-                )
+
+                    st.markdown("---")
+                    st.markdown("### 📄 Generated Autonomous Report Preview")
+                    st.markdown(auto_report_markdown)
+
+                    st.download_button(
+                        label="📥 Download Full Deep Vulnerability Report (.md)",
+                        data=auto_report_markdown,
+                        file_name=f"mhzaly_deep_vuln_report_{pipeline_target.replace('/', '_')}.md",
+                        mime="text/markdown",
+                        use_container_width=True
+                    )
             else:
-                st.warning("Please specify a target name for the report.")
+                st.warning("Please specify a target for the pipeline report.")
 
     elif module == "🤖 AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
