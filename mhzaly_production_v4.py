@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.9 - BULLETPROOF AI AGENT EDITION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Comprehensive Autonomous Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.0 - PURPLE TEAM UNIFIED EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
-- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
-- Autonomous Target Fingerprinting & Smart Endpoint Fuzzing Loop
+- Interactive AI Security Chatbot & Automated Sigma Rule Generator (Powered by Groq GPT-OSS 120B)
+- Autonomous Target Fingerprinting, Smart Endpoint Fuzzing & Log Parsing Simulator
 - NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement & Safety Filters
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
-- Offensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
+- Offensive/Defensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
 import streamlit as st
@@ -64,7 +64,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & AI-AGENTIC INTELLIGENCE ENGINES
+# 2. ENTERPRISE RECON, SOC & AI-AGENTIC INTELLIGENCE ENGINES
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -86,7 +86,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyAIHunter/16.9'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.0'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -386,13 +386,13 @@ class SecurityDatabase:
             return []
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3. STREAMLIT ENTERPRISE UI
+# 3. STREAMLIT ENTERPRISE UI (PURPLE TEAM HUB)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def main():
     st.set_page_config(
-        page_title="MHZALY AI Security Chatbot Suite",
-        page_icon="🤖",
+        page_title="MHZALY Purple Team Operations Suite",
+        page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -405,7 +405,7 @@ def main():
         with col2:
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("# MHZALY Enterprise Login")
-            st.markdown("##### Bug Bounty & Security Operations Suite")
+            st.markdown("##### Purple Team Operations & Security Suite")
             
             username = st.text_input("Operator Username")
             password = st.text_input("Operator Password", type="password")
@@ -416,7 +416,7 @@ def main():
                 if username == correct_user and password == correct_pass:
                     st.session_state.authenticated = True
                     st.session_state.user = username
-                    st.success("Authentication successful. Initializing modules...")
+                    st.success("Authentication successful. Initializing Purple Team modules...")
                     st.rerun()
                 else:
                     st.error("Authentication failed: Invalid credentials.")
@@ -433,10 +433,11 @@ def main():
         st.markdown(f"### Operator: `{st.session_state.user}`")
         st.markdown("---")
         module = st.radio(
-            "Navigation Menu",
+            "Purple Team Hub Menu",
             [
-                "⚡ Autonomous AI-Agent Pipeline & Report",
-                "🤖 AI Security Chatbot",
+                "⚡ Autonomous AI-Agent Red/Blue Pipeline",
+                "🛡️ Blue Team SOC Log & SIEM Simulator",
+                "🤖 AI Security Chatbot & Sigma Gen",
                 "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
                 "Network Infrastructure Audit",
@@ -452,16 +453,16 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "⚡ Autonomous AI-Agent Pipeline & Report":
-        st.markdown("# ⚡ Fully Autonomous AI-Agent Security Pipeline")
-        st.markdown("Enter target scope. The AI Agent autonomously executes threat triage, smart fuzzing, NVD vulnerability correlation, and deep architectural security review without human intervention.")
+    if module == "⚡ Autonomous AI-Agent Red/Blue Pipeline":
+        st.markdown("# ⚡ Fully Autonomous Purple Team Intelligence Pipeline")
+        st.markdown("Enter target scope. The AI Agent executes live multi-API recon, threat triage, soft-404 filtered fuzzing, NVD vulnerability correlation, and unified architectural hardening guidance.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
-        if st.button("🚀 Execute Autonomous AI Agentic Pipeline", type="primary", use_container_width=True):
+        if st.button("🚀 Execute Autonomous Purple Team Pipeline", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("AI Agent executing autonomous recon, threat telemetry, and vulnerability synthesis..."):
-                    db.log_activity("AI-Agent Pipeline", pipeline_target, "Initiated")
+                with st.spinner("AI Agent executing unified Red/Blue reconnaissance and vulnerability synthesis..."):
+                    db.log_activity("Purple Pipeline", pipeline_target, "Initiated")
                     
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
@@ -481,7 +482,7 @@ def main():
                     if not cve_res and domain_keyword != nvd_query_term:
                         cve_res = nvd.search_cve(domain_keyword, max_results=8)
 
-                    st.success("Telemetry gathered. AI Agent synthesizing architectural security review and hardening guidelines...")
+                    st.success("Telemetry gathered. AI Agent synthesizing defensive hardening and threat mitigation review...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -505,11 +506,11 @@ def main():
                                 'messages': [
                                     {
                                         'role': 'system', 
-                                        'content': 'You are an authorized enterprise cloud security architect and defensive code reviewer. Your task is strictly analytical: review the provided target telemetry, evaluate structural authorization patterns, analyze security posture and potential edge cases, and provide comprehensive defensive hardening guidelines and remediation procedures.'
+                                        'content': 'You are an elite Purple Team Lead and Enterprise Cloud Security Architect. Review the provided target telemetry from both offensive and defensive perspectives, evaluate structural authorization patterns, analyze security posture, and provide comprehensive defensive hardening guidelines and SIEM detection strategies.'
                                     },
                                     {
                                         'role': 'user', 
-                                        'content': f"Perform comprehensive architectural security review and generate defensive hardening guidance based on this target telemetry:\n{summary_context}"
+                                        'content': f"Perform unified Purple Team architectural review and generate defensive hardening guidance based on this target telemetry:\n{summary_context}"
                                     }
                                 ],
                                 'temperature': 0.5,
@@ -527,15 +528,15 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY AUTONOMOUS AI-AGENT SECURITY ASSESSMENT REPORT
+                    auto_report_markdown = f"""# 🛡️ MHZALY PURPLE TEAM SECURITY ASSESSMENT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
-* **Lead Operator:** `{st.session_state.user} (Autonomous AI Agent Engine)`
+* **Lead Operator:** `{st.session_state.user} (Purple Team AI Engine)`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** FULLY AUTOMATED SECURITY INTELLIGENCE
+* **Classification:** UNIFIED RED/BLUE SECURITY INTELLIGENCE
 
-## 1. Executive Summary & Autonomous Scope Overview
-Automated AI-agent intelligence gathering was completed against `{pipeline_target}`. The agent analyzed reputation scores, NVD CVE mappings, and target tech vectors to synthesize attack surface posture.
+## 1. Executive Summary & Recon Scope Overview
+Automated Purple Team intelligence gathering was completed against `{pipeline_target}`. The pipeline analyzed reputation scores, NVD CVE mappings, and target tech vectors to assess overall security posture.
 - **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
 - **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
 - **Detected Technologies:** `{tech_md}`
@@ -560,80 +561,147 @@ Automated AI-agent intelligence gathering was completed against `{pipeline_targe
 ## 4. Correlated Vulnerabilities (NIST NVD v2.0 - Filtered CVSS >= 4.0)
 {cve_list_md}
 
-## 5. Autonomous AI-Agent Architectural Security Analysis & Hardening Recommendations
+## 5. Unified Purple Team Architectural Analysis & Hardening Recommendations
 {ai_analysis_text}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-*Generated via MHZALY Fully Autonomous AI-Agent Security Platform*
+*Generated via MHZALY Purple Team Operations Suite*
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Autonomous AI Report Preview")
+                    st.markdown("### 📄 Generated Purple Team Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Autonomous Security Report (.md)",
+                        label="📥 Download Full Purple Team Security Report (.md)",
                         data=auto_report_markdown,
-                        file_name=f"mhzaly_ai_agent_report_{pipeline_target.replace('/', '_')}.md",
+                        file_name=f"mhzaly_purple_team_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
                         use_container_width=True
                     )
             else:
-                st.warning("Please specify a target for the autonomous pipeline.")
+                st.warning("Please specify a target for the pipeline report.")
 
-    elif module == "🤖 AI Security Chatbot":
-        st.markdown("# AI Security Operations & Bug Bounty Chatbot")
-        st.markdown("Ask anything about security, exploit vectors, WAF bypass, or Sigma detection rules. Powered by Groq AI.")
+    elif module == "🛡️ Blue Team SOC Log & SIEM Simulator":
+        st.markdown("# Blue Team SOC Log Parsing & Threat Detection Simulator")
+        st.markdown("Paste raw server access logs or Windows Event logs below to simulate SIEM parsing and anomaly detection.")
+        
+        sample_log = st.text_area("Raw Log Data Input", placeholder="Paste Apache/Nginx access log or Windows Event ID log lines here...", height=150)
+        
+        if st.button("Analyze Logs & Detect Anomalies", type="primary", use_container_width=True):
+            if sample_log:
+                with st.spinner("Running heuristic parsing and threat detection..."):
+                    st.success("Log parsing complete.")
+                    
+                    # Heuristic detection patterns
+                    lines = sample_log.split('\n')
+                    suspicious_hits = []
+                    for idx, line in enumerate(lines, 1):
+                        l_lower = line.lower()
+                        if any(k in l_lower for k in ['union select', '<script>', 'etc/passwd', 'cmd.exe', '/wpscan', 'sqlmap', 'eval(']):
+                            suspicious_hits.append({'line_no': idx, 'content': line, 'indicator': 'Injection / Exploit Pattern'})
+                        elif '404' in line or '403' in line:
+                            suspicious_hits.append({'line_no': idx, 'content': line, 'indicator': 'Unauthorized / Failed Request'})
+                            
+                    c1, c2 = st.columns(2)
+                    c1.metric("Total Log Lines Analyzed", len(lines))
+                    c2.metric("Detected Anomalies / Hits", len(suspicious_hits))
+                    
+                    if suspicious_hits:
+                        st.markdown("### 🚨 Detected Security Anomalies")
+                        st.dataframe(pd.DataFrame(suspicious_hits), use_container_width=True)
+                    else:
+                        st.info("No malicious patterns or obvious anomalies detected in the provided log sample.")
+            else:
+                st.warning("Please paste some log data to analyze.")
 
-        if "messages" not in st.session_state:
-            st.session_state.messages = [
-                {"role": "assistant", "content": "Hello operator! I am your MHZALY AI Security Assistant backed by your active API keys. How can I assist your bug bounty or SOC operations today?"}
-            ]
+    elif module == "🤖 AI Security Chatbot & Sigma Gen":
+        st.markdown("# AI Security Chatbot & Automated Sigma Rule Generator")
+        st.markdown("Chat with Groq AI or request automated Sigma detection rules for any CVE or threat pattern.")
 
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+        tab_chat, tab_sigma = st.tabs(["AI Security Chatbot", "Automated Sigma Rule Generator"])
+        
+        with tab_chat:
+            if "messages" not in st.session_state:
+                st.session_state.messages = [
+                    {"role": "assistant", "content": "Hello operator! I am your MHZALY Purple Team AI Assistant. How can I assist your security operations today?"}
+                ]
 
-        if prompt := st.chat_input("Ask a security query or request a payload/playbook..."):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+            for message in st.session_state.messages:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
 
-            with st.chat_message("assistant"):
-                if not groq_key:
-                    response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
-                    st.markdown(response_text)
+            if prompt := st.chat_input("Ask a security query or request a playbook..."):
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+
+                with st.chat_message("assistant"):
+                    if not groq_key:
+                        response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
+                        st.markdown(response_text)
+                    else:
+                        with st.spinner("Analyzing via Groq AI..."):
+                            try:
+                                headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                                payload = {
+                                    'model': 'openai/gpt-oss-120b',
+                                    'messages': [
+                                        {'role': 'system', 'content': 'You are an elite Purple Team Security Expert and SOC Advisor.'},
+                                        *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
+                                    ],
+                                    'temperature': 0.6,
+                                    'max_tokens': 1500
+                                }
+                                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                                if resp.status_code == 200:
+                                    response_text = resp.json()['choices'][0]['message']['content']
+                                else:
+                                    response_text = f"API Error Code: {resp.status_code} - {resp.text}"
+                            except Exception as e:
+                                response_text = f"Connection failed: {e}"
+                        st.markdown(response_text)
+                st.session_state.messages.append({"role": "assistant", "content": response_text})
+                
+        with tab_sigma:
+            st.markdown("### Generate SIEM Detection Rules (Sigma / YARA)")
+            cve_input = st.text_input("Enter CVE ID or Attack Description", placeholder="e.g., CVE-2021-44228 or Path Traversal Attack")
+            if st.button("Generate Sigma Detection Rule", type="primary"):
+                if cve_input:
+                    if not groq_key:
+                        st.error("Groq API Key is missing in secrets.")
+                    else:
+                        with st.spinner("Generating professional Sigma detection rule via Groq AI..."):
+                            try:
+                                headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
+                                payload = {
+                                    'model': 'openai/gpt-oss-120b',
+                                    'messages': [
+                                        {'role': 'system', 'content': 'You are a senior Blue Team threat hunter. Generate a valid, production-ready Sigma detection rule in YAML format for the requested vulnerability or threat vector.'},
+                                        {'role': 'user', 'content': f"Generate a Sigma rule for: {cve_input}"}
+                                    ],
+                                    'temperature': 0.3,
+                                    'max_tokens': 1000
+                                }
+                                resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                                if resp.status_code == 200:
+                                    sigma_res = resp.json()['choices'][0]['message']['content']
+                                    st.code(sigma_res, language='yaml')
+                                else:
+                                    st.error(f"API Error: {resp.status_code}")
+                            except Exception as e:
+                                st.error(f"Error: {e}")
                 else:
-                    with st.spinner("Analyzing via Groq AI..."):
-                        try:
-                            headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
-                            payload = {
-                                'model': 'openai/gpt-oss-120b',
-                                'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor specializing in security assessments.'},
-                                    *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
-                                ],
-                                'temperature': 0.6,
-                                'max_tokens': 1500
-                            }
-                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
-                            if resp.status_code == 200:
-                                response_text = resp.json()['choices'][0]['message']['content']
-                            else:
-                                response_text = f"API Error Code: {resp.status_code} - {resp.text}"
-                        except Exception as e:
-                            response_text = f"Connection failed: {e}"
-                    st.markdown(response_text)
-            st.session_state.messages.append({"role": "assistant", "content": response_text})
+                    st.warning("Please enter a CVE ID or attack description.")
 
     elif module == "Command Telemetry Center":
-        st.markdown("# Security Operations Center - Command Dashboard")
-        st.markdown("Aggregated telemetry across offensive recon nodes and defensive monitoring.")
+        st.markdown("# Purple Team Operations Center - Command Dashboard")
+        st.markdown("Aggregated telemetry across offensive recon and defensive SOC monitoring.")
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
+        c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -677,7 +745,7 @@ Automated AI-agent intelligence gathering was completed against `{pipeline_targe
                 st.warning("Please specify a target domain or URL.")
 
     elif module == "Network Infrastructure Audit":
-        st.markdown("# Red/Blue Team Infrastructure Reconnaissance & Audit")
+        st.markdown("# Purple Team Infrastructure Reconnaissance & Audit")
         target_domain = st.text_input("Target Domain or IP Address", placeholder="e.g., scanme.nmap.org")
         
         if st.button("Execute Full Infrastructure Audit", type="primary", use_container_width=True):
@@ -802,7 +870,7 @@ Automated AI-agent intelligence gathering was completed against `{pipeline_targe
                 st.warning("Please provide a valid indicator.")
 
     elif module == "Offensive Encoder & Hasher":
-        st.markdown("# Offensive Payload Encoder, Decoder & Hasher")
+        st.markdown("# Payload Encoder, Decoder & Hasher")
         input_text = st.text_input("Input String / Payload", placeholder="Enter text to encode, decode, or hash...")
         
         col_enc1, col_enc2 = st.columns(2)
@@ -843,7 +911,7 @@ Automated AI-agent intelligence gathering was completed against `{pipeline_targe
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Chatbot:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
