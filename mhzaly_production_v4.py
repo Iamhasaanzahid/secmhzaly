@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.4 - TRUE AUTONOMOUS PRODUCTION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.5 - ENTERPRISE PRODUCTION EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Pipeline with Smart Keyword Extraction & IDOR/Logic Hunting
+- 100% Autonomous 4-API Pipeline with Bulletproof Exception Safety & Security Analysis
 - Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
@@ -86,7 +86,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.4'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.5'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -443,24 +443,21 @@ def main():
             st.rerun()
 
     if module == "⚡ Unified 4-API Pipeline & Report":
-        st.markdown("# ⚡ Autonomous 4-API Pipeline & Business Logic / IDOR Hunting Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, automatically extracts valid tech/domain keywords for NVD correlation, and tasks Groq AI to hunt for **complex business logic flaws, IDOR, and payment gateway flow bypasses**.")
+        st.markdown("# ⚡ Autonomous 4-API Pipeline & Security Analysis Report")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and tasks Groq AI to perform an in-depth security analysis report.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
-        if st.button("🚀 Run Autonomous Pipeline & Generate Business Logic Report", type="primary", use_container_width=True):
+        if st.button("🚀 Run Autonomous Pipeline & Generate Security Report", type="primary", use_container_width=True):
             if pipeline_target:
-                with st.spinner("Executing deep 4-API pipeline and analyzing business logic attack vectors..."):
-                    db.log_activity("Business Logic & IDOR Pipeline", pipeline_target, "Initiated")
+                with st.spinner("Executing deep 4-API pipeline and analyzing telemetry..."):
+                    db.log_activity("Autonomous Pipeline", pipeline_target, "Initiated")
                     
-                    # 1. Threat Intelligence (VirusTotal & AbuseIPDB)
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
                     
-                    # 2. Reconnaissance & Fingerprinting (to grab real tech stack)
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
 
-                    # Smart Keyword Extractor for NVD API so it never returns empty results
                     clean_target = pipeline_target.replace('https://', '').replace('http://', '').split('/')[0]
                     domain_keyword = clean_target.split('.')[0] if '.' in clean_target else clean_target
                     
@@ -469,13 +466,12 @@ def main():
                     else:
                         nvd_query_term = domain_keyword
 
-                    # 3. Vulnerability Intelligence (NVD using smart keyword)
                     nvd = NVDIntelligenceClient(nvd_key)
                     cve_res = nvd.search_cve(nvd_query_term, max_results=8)
                     if not cve_res and domain_keyword != nvd_query_term:
                         cve_res = nvd.search_cve(domain_keyword, max_results=8)
 
-                    st.success("Telemetry gathered. Performing Groq AI business logic & IDOR flaw analysis...")
+                    st.success("Telemetry gathered. Performing Groq AI security analysis...")
 
                     c1, c2, c3 = st.columns(3)
                     c1.metric("VT Malicious Detections", ti_res['vt_summary']['malicious'])
@@ -497,11 +493,17 @@ def main():
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Bug Bounty Lead and Offensive Security Expert specializing in Complex Business Logic Vulnerabilities. Based on the target telemetry, explicitly analyze potential Insecure Direct Object References (IDOR), Payment Gateway Flow Bypasses, Price/Quantity Manipulation, and Multi-step Authorization Flaws. Provide deep verification methodology and step-by-step PoC testing instructions.'},
-                                    {'role': 'user', 'content': f"Analyze this target telemetry for business logic flaws, authorization gaps, and IDOR vectors:\n{summary_context}"}
+                                    {
+                                        'role': 'system', 
+                                        'content': 'You are an authorized enterprise security auditor and defensive code reviewer. Your task is strictly educational and analytical: review the provided target telemetry, identify structural authorization design patterns, analyze potential business logic edge cases, and provide defensive remediation guidelines for application hardening.'
+                                    },
+                                    {
+                                        'role': 'user', 
+                                        'content': f"Provide an architectural security review and hardening guidelines based on this telemetry:\n{summary_context}"
+                                    }
                                 ],
-                                'temperature': 0.7,
-                                'max_tokens': 2000
+                                'temperature': 0.5,
+                                'max_tokens': 1500
                             }
                             resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=30)
                             if resp.status_code == 200:
@@ -515,15 +517,15 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY BUSINESS LOGIC & IDOR SECURITY ASSESSMENT REPORT
+                    auto_report_markdown = f"""# 🛡️ MHZALY SECURITY ASSESSMENT & HARDENING REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
 * **Lead Operator:** `{st.session_state.user}`
 * **Timestamp:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`
-* **Classification:** BUG BOUNTY & BUSINESS LOGIC INTELLIGENCE
+* **Classification:** ENTERPRISE SECURITY & ARCHITECTURAL INTEL
 
 ## 1. Executive Summary & Recon Scope Overview
-Automated 4-API intelligence gathering was completed against `{pipeline_target}`. The pipeline analyzed reputation scores, NVD CVE mappings, and target tech vectors to assess authorization architecture.
+Automated intelligence gathering was completed against `{pipeline_target}`. The pipeline analyzed reputation scores, NVD CVE mappings, and target tech vectors to assess authorization architecture.
 - **VirusTotal Malicious Count:** `{ti_res['vt_summary']['malicious']}`
 - **AbuseIPDB Score:** `{ti_res['abuse_summary']['score']}%`
 - **Detected Technologies:** `{tech_md}`
@@ -548,21 +550,21 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
 ## 4. Correlated Vulnerabilities (NIST NVD v2.0)
 {cve_list_md}
 
-## 5. AI Business Logic, IDOR & Payment Flow Bypass Analysis
+## 5. AI Architectural Security Analysis & Hardening Recommendations
 {ai_analysis_text}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-*Generated via MHZALY Enterprise Security & Bug Bounty Platform*
+*Generated via MHZALY Enterprise Security Platform*
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Business Logic Report Preview")
+                    st.markdown("### 📄 Generated Security Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Business Logic & IDOR Report (.md)",
+                        label="📥 Download Full Security Assessment Report (.md)",
                         data=auto_report_markdown,
-                        file_name=f"mhzaly_business_logic_report_{pipeline_target.replace('/', '_')}.md",
+                        file_name=f"mhzaly_security_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
                         use_container_width=True
                     )
@@ -598,7 +600,7 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
                             payload = {
                                 'model': 'openai/gpt-oss-120b',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor specializing in Business Logic and IDOR flaws.'},
+                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor specializing in security assessments.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
                                 ],
                                 'temperature': 0.6,
