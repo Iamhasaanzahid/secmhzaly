@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-🛡️ MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v9.0 - FULL DETAILED SCALE
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v9.1 - FULL DETAILED SCALE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- Interactive AI Security Chatbot (Powered by Groq 4-API Integration)
+- Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible API)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
 - Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP safe)
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
-- Multi-Mode Groq AI Assistant (General, Exploit/WAF, Code Review, SOC Playbooks)
 - Offensive Payload Encoder, Decoder & Hashing Utility
 - Automated Finding Report Exporter (JSON / Markdown)
 - SQLite Persistence & Audit Log History Tracking
@@ -453,7 +452,7 @@ def main():
                         try:
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'llama-3.3-70b-versatile',
+                                'model': 'openai/gpt-oss-120b',
                                 'messages': [
                                     {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
@@ -478,7 +477,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "Active")
+        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -665,7 +664,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Chatbot:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
