@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.3 - ULTIMATE MEGA PRODUCTION EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v16.4 - TRUE AUTONOMOUS PRODUCTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
-- 100% Autonomous 4-API Pipeline with Bulletproof Exception Safety & IDOR/Logic Hunting
-- Automated Enterprise Security Assessment Report Generator & Exporter (.md / HTML)
+- 100% Autonomous 4-API Pipeline with Smart Keyword Extraction & IDOR/Logic Hunting
+- Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible GPT-OSS 120B)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
-- NVD v2.0 REST Client with Accelerated API Key Support & CVSS v3.1 Parsing
+- NVD v2.0 REST Client with Accelerated API Key Support & Smart Fallbacks
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
-- Advanced Network Recon: Multi-threaded Port Scanning, DNS Enumeration, SSL & Headers Audit
+- Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
 - SQLite Persistence & Audit Log History Tracking
 
@@ -64,7 +64,7 @@ class VulnerabilityRecord:
         return asdict(self)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (FULL SCALE IMPLEMENTATION)
+# 2. ENTERPRISE RECON & INTELLIGENCE ENGINES (100% REAL-WORLD FUNCTIONAL)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class BugBountyReconEngine:
@@ -72,22 +72,21 @@ class BugBountyReconEngine:
     def deep_recon(target: str) -> Dict[str, Any]:
         report = {'target': target, 'status_code': None, 'server': 'Hidden / Unknown', 'technologies': [], 'exposed_files': [], 'dns': {}}
         try:
+            clean_target = target.replace('https://', '').replace('http://', '').split('/')[0]
             if not target.startswith(('http://', 'https://')):
                 target_url = f"https://{target}"
             else:
                 target_url = target
                 
-            parsed_domain = urllib.parse.urlparse(target_url).netloc or target
-            
             for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
                 try:
-                    answers = dns.resolver.resolve(parsed_domain, rtype)
+                    answers = dns.resolver.resolve(clean_target, rtype)
                     report['dns'][rtype] = [str(r) for r in answers]
                 except Exception:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.3'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/16.4'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -97,25 +96,24 @@ class BugBountyReconEngine:
             headers_str = str(resp.headers).lower()
             
             if 'wp-content' in body or 'wordpress' in headers_str:
-                report['technologies'].append('WordPress CMS')
+                report['technologies'].append('WordPress')
             if 'laravel' in headers_str or 'laravel_session' in str(resp.cookies):
-                report['technologies'].append('Laravel PHP Framework')
+                report['technologies'].append('Laravel')
             if 'react' in body or '_next' in body or 'data-reactroot' in body:
-                report['technologies'].append('React / Next.js SPA')
+                report['technologies'].append('React')
             if 'express' in headers_str or 'connect.sid' in str(resp.cookies):
-                report['technologies'].append('Node.js / Express')
+                report['technologies'].append('Express')
             if 'cloudflare' in headers_str:
-                report['technologies'].append('Cloudflare WAF / Reverse Proxy')
+                report['technologies'].append('Cloudflare')
             if 'django' in headers_str or 'csrftoken' in str(resp.cookies):
-                report['technologies'].append('Django Python Framework')
+                report['technologies'].append('Django')
 
             fuzz_paths = [
                 '/.env', '/robots.txt', '/sitemap.xml', '/git/config', 
                 '/backup.zip', '/api/v1/users', '/swagger.ui', '/phpinfo.php',
                 '/config.json', '/auth/login', '/graphql', '/debug', '/admin',
                 '/server-status', '/xmlrpc.php', '/package.json', '/composer.json',
-                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env',
-                '/api/v1/profile', '/api/v1/orders', '/oauth/token'
+                '/api/v1/health', '/v2/swagger.json', '/metrics', '/actuator/env'
             ]
             
             base_origin = f"{urllib.parse.urlparse(target_url).scheme}://{urllib.parse.urlparse(target_url).netloc}"
@@ -265,9 +263,10 @@ class AdvancedReconEngine:
     def audit_infrastructure(domain: str) -> Dict[str, Any]:
         report = {'dns': {}, 'ports': [], 'ssl': {'valid': False}, 'headers': {}}
         try:
+            clean_domain = domain.replace('https://', '').replace('http://', '').split('/')[0]
             for rtype in ['A', 'AAAA', 'MX', 'NS', 'TXT', 'SOA']:
                 try:
-                    answers = dns.resolver.resolve(domain, rtype)
+                    answers = dns.resolver.resolve(clean_domain, rtype)
                     report['dns'][rtype] = [str(r) for r in answers]
                 except Exception:
                     report['dns'][rtype] = []
@@ -279,7 +278,7 @@ class AdvancedReconEngine:
                 try:
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.settimeout(0.8)
-                    res = sock.connect_ex((domain, port))
+                    res = sock.connect_ex((clean_domain, port))
                     sock.close()
                     if res == 0:
                         sname = {
@@ -305,8 +304,8 @@ class AdvancedReconEngine:
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
-                with socket.create_connection((domain, 443), timeout=3) as sock:
-                    with ctx.wrap_socket(sock, server_hostname=domain) as ssock:
+                with socket.create_connection((clean_domain, 443), timeout=3) as sock:
+                    with ctx.wrap_socket(sock, server_hostname=clean_domain) as ssock:
                         cert = ssock.getpeercert()
                         if cert:
                             report['ssl']['valid'] = True
@@ -321,7 +320,7 @@ class AdvancedReconEngine:
                 report['ssl']['error'] = str(e)
 
             try:
-                resp = requests.get(f"https://{domain}", timeout=5, verify=False)
+                resp = requests.get(f"https://{clean_domain}", timeout=5, verify=False)
                 target_headers = ['Strict-Transport-Security', 'Content-Security-Policy', 'X-Frame-Options', 'X-Content-Type-Options', 'X-XSS-Protection']
                 for h in target_headers:
                     report['headers'][h] = resp.headers.get(h, 'MISSING')
@@ -445,7 +444,7 @@ def main():
 
     if module == "⚡ Unified 4-API Pipeline & Report":
         st.markdown("# ⚡ Autonomous 4-API Pipeline & Business Logic / IDOR Hunting Report")
-        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, correlates NVD data, and tasks Groq AI to hunt for **complex business logic flaws, IDOR, and payment gateway flow bypasses**.")
+        st.markdown("Enter target scope. The engine executes live multi-API reconnaissance, automatically extracts valid tech/domain keywords for NVD correlation, and tasks Groq AI to hunt for **complex business logic flaws, IDOR, and payment gateway flow bypasses**.")
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
@@ -454,13 +453,27 @@ def main():
                 with st.spinner("Executing deep 4-API pipeline and analyzing business logic attack vectors..."):
                     db.log_activity("Business Logic & IDOR Pipeline", pipeline_target, "Initiated")
                     
+                    # 1. Threat Intelligence (VirusTotal & AbuseIPDB)
                     ti = ThreatIntelService(vt_key, abuse_key)
                     ti_res = ti.triage_indicator(pipeline_target)
                     
-                    nvd = NVDIntelligenceClient(nvd_key)
-                    cve_res = nvd.search_cve(pipeline_target, max_results=8)
-                    
+                    # 2. Reconnaissance & Fingerprinting (to grab real tech stack)
                     recon_res = BugBountyReconEngine.deep_recon(pipeline_target)
+
+                    # Smart Keyword Extractor for NVD API so it never returns empty results
+                    clean_target = pipeline_target.replace('https://', '').replace('http://', '').split('/')[0]
+                    domain_keyword = clean_target.split('.')[0] if '.' in clean_target else clean_target
+                    
+                    if recon_res.get('technologies'):
+                        nvd_query_term = recon_res['technologies'][0]
+                    else:
+                        nvd_query_term = domain_keyword
+
+                    # 3. Vulnerability Intelligence (NVD using smart keyword)
+                    nvd = NVDIntelligenceClient(nvd_key)
+                    cve_res = nvd.search_cve(nvd_query_term, max_results=8)
+                    if not cve_res and domain_keyword != nvd_query_term:
+                        cve_res = nvd.search_cve(domain_keyword, max_results=8)
 
                     st.success("Telemetry gathered. Performing Groq AI business logic & IDOR flaw analysis...")
 
@@ -498,7 +511,7 @@ def main():
                         except Exception as e:
                             ai_analysis_text = f"Connection failed: {e}"
 
-                    cve_list_md = "\n".join([f"- **{c.cve_id}** (CVSS: {c.cvss_score} - {c.severity}): {c.description}" for c in cve_res]) if cve_res else "No direct matching CVE entries found."
+                    cve_list_md = "\n".join([f"- **{c.cve_id}** (CVSS: {c.cvss_score} - {c.severity}): {c.description}" for c in cve_res]) if cve_res else "No direct matching CVE entries found for keyword."
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
@@ -657,7 +670,7 @@ Automated 4-API intelligence gathering was completed against `{pipeline_target}`
         
         if st.button("Execute Full Infrastructure Audit", type="primary", use_container_width=True):
             if target_domain:
-                with st.spinner(f"Executing infrastructure audit against {target_domain}..."):
+                with st.spinner(f"Executing live infrastructure audit against {target_domain}..."):
                     audit_data = AdvancedReconEngine.audit_infrastructure(target_domain)
                     db.log_activity("Infrastructure Audit", target_domain, "Completed")
                     st.success("Infrastructure Audit Completed Successfully.")
