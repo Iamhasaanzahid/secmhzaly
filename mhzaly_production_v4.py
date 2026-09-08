@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.2 - TELEMETRY FIRST EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.4 - MODERN SaaS EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
+- Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
@@ -87,7 +88,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.2'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.4'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -387,7 +388,7 @@ class SecurityDatabase:
             return []
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3. STREAMLIT ENTERPRISE UI (PURPLE TEAM HUB)
+# 3. STREAMLIT ENTERPRISE UI (MODERN SaaS CSS & PURPLE TEAM HUB)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def main():
@@ -398,6 +399,88 @@ def main():
         initial_sidebar_state="expanded"
     )
 
+    # Modern SaaS Dark Glassmorphism Styling Injection
+    st.markdown("""
+        <style>
+        /* Main background & typography */
+        .stApp {
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        /* Sidebar styling */
+        [data-testid="stSidebar"] {
+            background-color: #111827;
+            border-right: 1px solid #1f2937;
+        }
+        
+        /* Glassmorphism Cards */
+        .saas-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Custom Buttons */
+        .stButton>button {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .stButton>button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        /* Metric Cards Customization */
+        [data-testid="stMetric"] {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        [data-testid="stMetricLabel"] {
+            color: #9ca3af !important;
+            font-weight: 500;
+        }
+        [data-testid="stMetricValue"] {
+            color: #60a5fa !important;
+            font-weight: 700;
+        }
+        
+        /* Inputs & Textareas */
+        .stTextInput>div>div>input, .stTextArea>div>div>textarea {
+            background-color: #1f2937;
+            color: #f3f4f6;
+            border: 1px solid #374151;
+            border-radius: 8px;
+        }
+        .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Headers styling */
+        h1, h2, h3 {
+            color: #f9fafb;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
@@ -405,19 +488,23 @@ def main():
         col1, col2, col3 = st.columns([1, 1.2, 1])
         with col2:
             st.markdown("<br><br>", unsafe_allow_html=True)
-            st.markdown("# MHZALY Enterprise Login")
-            st.markdown("##### Purple Team Operations & Security Suite")
+            st.markdown("""
+                <div class="saas-card" style="text-align: center;">
+                    <h2>MHZALY SaaS Portal</h2>
+                    <p style="color: #9ca3af;">Enterprise Purple Team Operations Suite</p>
+                </div>
+            """, unsafe_allow_html=True)
             
             username = st.text_input("Operator Username")
             password = st.text_input("Operator Password", type="password")
             
-            if st.button("Authenticate Suite", use_container_width=True, type="primary"):
+            if st.button("Authenticate Suite", use_container_width=True):
                 correct_user = st.secrets.get("APP_USERNAME", "admin")
                 correct_pass = st.secrets.get("APP_PASSWORD", "admin123")
                 if username == correct_user and password == correct_pass:
                     st.session_state.authenticated = True
                     st.session_state.user = username
-                    st.success("Authentication successful. Initializing Purple Team modules...")
+                    st.success("Authentication successful. Initializing SaaS modules...")
                     st.rerun()
                 else:
                     st.error("Authentication failed: Invalid credentials.")
@@ -437,10 +524,10 @@ def main():
             "Purple Team Hub Menu",
             [
                 "Command Telemetry Center",
-                "⚡ Autonomous AI-Agent Red/Blue Pipeline",
-                "🤖 AI Security Chatbot",
-                "🛡️ Blue Team SOC Log & SIEM Simulator",
-                "📊 Automated Sigma Rule Generator",
+                "Autonomous AI-Agent Red/Blue Pipeline",
+                "AI Security Chatbot",
+                "Blue Team SOC Log & SIEM Simulator",
+                "Automated Sigma Rule Generator",
                 "Bug Bounty Recon & Fuzzing",
                 "Network Infrastructure Audit",
                 "Enterprise NVD Intelligence",
@@ -456,8 +543,8 @@ def main():
             st.rerun()
 
     if module == "Command Telemetry Center":
-        st.markdown("# Purple Team Operations Center - Command Dashboard")
-        st.markdown("Aggregated telemetry across offensive recon and defensive SOC monitoring.")
+        st.markdown("# Purple Team Operations Center")
+        st.markdown("<p style='color: #9ca3af;'>Aggregated telemetry across offensive recon and defensive SOC monitoring.</p>", unsafe_allow_html=True)
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
@@ -465,13 +552,13 @@ def main():
         c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
-    elif module == "⚡ Autonomous AI-Agent Red/Blue Pipeline":
-        st.markdown("# ⚡ Fully Autonomous Purple Team Intelligence Pipeline")
-        st.markdown("Enter target scope. The AI Agent executes live multi-API recon, threat triage, soft-404 filtered fuzzing, NVD vulnerability correlation, and unified architectural hardening guidance.")
+    elif module == "Autonomous AI-Agent Red/Blue Pipeline":
+        st.markdown("# Fully Autonomous Purple Team Intelligence Pipeline")
+        st.markdown("<p style='color: #9ca3af;'>Enter target scope. The AI Agent executes live multi-API recon, threat triage, soft-404 filtered fuzzing, NVD vulnerability correlation, and unified architectural hardening guidance.</p>", unsafe_allow_html=True)
 
         pipeline_target = st.text_input("Target Domain, IP Address, or Keyword", placeholder="e.g., target-domain.com or 8.8.8.8")
 
-        if st.button("🚀 Execute Autonomous Purple Team Pipeline", type="primary", use_container_width=True):
+        if st.button("Execute Autonomous Purple Team Pipeline", use_container_width=True):
             if pipeline_target:
                 with st.spinner("AI Agent executing unified Red/Blue reconnaissance and vulnerability synthesis..."):
                     db.log_activity("Purple Pipeline", pipeline_target, "Initiated")
@@ -540,7 +627,7 @@ def main():
                     exposed_md = "\n".join([f"- Endpoint: `{ef['path']}` | Status: `{ef['status']}`" for ef in recon_res.get('exposed_files', [])]) if recon_res.get('exposed_files') else "No sensitive endpoints exposed on standard fuzz paths."
                     tech_md = ", ".join(recon_res.get('technologies', ['Custom / Undetected']))
 
-                    auto_report_markdown = f"""# 🛡️ MHZALY PURPLE TEAM SECURITY ASSESSMENT REPORT
+                    auto_report_markdown = f"""# MHZALY PURPLE TEAM SECURITY ASSESSMENT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 * **Target Scope:** `{pipeline_target}`
 * **Lead Operator:** `{st.session_state.user} (Purple Team AI Engine)`
@@ -581,11 +668,11 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
 """
 
                     st.markdown("---")
-                    st.markdown("### 📄 Generated Purple Team Report Preview")
+                    st.markdown("### Generated Purple Team Report Preview")
                     st.markdown(auto_report_markdown)
 
                     st.download_button(
-                        label="📥 Download Full Purple Team Security Report (.md)",
+                        label="Download Full Purple Team Security Report (.md)",
                         data=auto_report_markdown,
                         file_name=f"mhzaly_purple_team_report_{pipeline_target.replace('/', '_')}.md",
                         mime="text/markdown",
@@ -594,9 +681,9 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
             else:
                 st.warning("Please specify a target for the pipeline report.")
 
-    elif module == "🤖 AI Security Chatbot":
+    elif module == "AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
-        st.markdown("Ask anything about security, exploit vectors, WAF bypass, or defense strategies. Powered by Groq AI.")
+        st.markdown("<p style='color: #9ca3af;'>Ask anything about security, exploit vectors, WAF bypass, or defense strategies. Powered by Groq AI.</p>", unsafe_allow_html=True)
 
         if "messages" not in st.session_state:
             st.session_state.messages = [
@@ -614,7 +701,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
 
             with st.chat_message("assistant"):
                 if not groq_key:
-                    response_text = "❌ Error: Groq API Key is not configured in your Streamlit secrets."
+                    response_text = "Error: Groq API Key is not configured in your Streamlit secrets."
                     st.markdown(response_text)
                 else:
                     with st.spinner("Analyzing via Groq AI..."):
@@ -639,13 +726,13 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                     st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
 
-    elif module == "🛡️ Blue Team SOC Log & SIEM Simulator":
+    elif module == "Blue Team SOC Log & SIEM Simulator":
         st.markdown("# Blue Team SOC Log Parsing & Threat Detection Simulator")
-        st.markdown("Paste raw server access logs or Windows Event logs below to simulate SIEM parsing and anomaly detection.")
+        st.markdown("<p style='color: #9ca3af;'>Paste raw server access logs or Windows Event logs below to simulate SIEM parsing and anomaly detection.</p>", unsafe_allow_html=True)
         
         sample_log = st.text_area("Raw Log Data Input", placeholder="Paste Apache/Nginx access log or Windows Event ID log lines here...", height=150)
         
-        if st.button("Analyze Logs & Detect Anomalies", type="primary", use_container_width=True):
+        if st.button("Analyze Logs & Detect Anomalies", use_container_width=True):
             if sample_log:
                 with st.spinner("Running heuristic parsing and threat detection..."):
                     st.success("Log parsing complete.")
@@ -664,19 +751,19 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                     c2.metric("Detected Anomalies / Hits", len(suspicious_hits))
                     
                     if suspicious_hits:
-                        st.markdown("### 🚨 Detected Security Anomalies")
+                        st.markdown("### Detected Security Anomalies")
                         st.dataframe(pd.DataFrame(suspicious_hits), use_container_width=True)
                     else:
                         st.info("No malicious patterns or obvious anomalies detected in the provided log sample.")
             else:
                 st.warning("Please paste some log data to analyze.")
 
-    elif module == "📊 Automated Sigma Rule Generator":
+    elif module == "Automated Sigma Rule Generator":
         st.markdown("# Automated Sigma Rule & YARA Detection Generator")
-        st.markdown("Generate production-ready SIEM detection rules for any CVE, IoC, or attack pattern using Groq AI.")
+        st.markdown("<p style='color: #9ca3af;'>Generate production-ready SIEM detection rules for any CVE, IoC, or attack pattern using Groq AI.</p>", unsafe_allow_html=True)
         
         cve_input = st.text_input("Enter CVE ID or Attack Description", placeholder="e.g., CVE-2021-44228 or Path Traversal Attack")
-        if st.button("Generate Sigma Detection Rule", type="primary"):
+        if st.button("Generate Sigma Detection Rule", use_container_width=True):
             if cve_input:
                 if not groq_key:
                     st.error("Groq API Key is missing in secrets.")
@@ -708,7 +795,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.markdown("# Target Reconnaissance & Sensitive Endpoint Fuzzing")
         target_input = st.text_input("Target URL or Domain", placeholder="e.g., target-domain.com")
         
-        if st.button("Launch Recon & Asset Discovery", type="primary", use_container_width=True):
+        if st.button("Launch Recon & Asset Discovery", use_container_width=True):
             if target_input:
                 with st.spinner(f"Executing deep offensive reconnaissance on {target_input}..."):
                     recon = BugBountyReconEngine.deep_recon(target_input)
@@ -748,7 +835,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.markdown("# Purple Team Infrastructure Reconnaissance & Audit")
         target_domain = st.text_input("Target Domain or IP Address", placeholder="e.g., scanme.nmap.org")
         
-        if st.button("Execute Full Infrastructure Audit", type="primary", use_container_width=True):
+        if st.button("Execute Full Infrastructure Audit", use_container_width=True):
             if target_domain:
                 with st.spinner(f"Executing live infrastructure audit against {target_domain}..."):
                     audit_data = AdvancedReconEngine.audit_infrastructure(target_domain)
@@ -791,7 +878,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.markdown("# Enterprise NVD Vulnerability Intelligence")
         keyword = st.text_input("Search Software / Vendor / CVE", placeholder="e.g., apache, wordpress plugin, cve-2024")
         
-        if st.button("Query NVD Database", type="primary", use_container_width=True):
+        if st.button("Query NVD Database", use_container_width=True):
             if keyword:
                 with st.spinner("Fetching CVE telemetry from NIST NVD..."):
                     client = NVDIntelligenceClient(nvd_key)
@@ -812,12 +899,12 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                 st.warning("Please enter a search keyword.")
 
     elif module == "Threat Intel & IOC Triage":
-        st.markdown("# 🛡️ Live Threat Intelligence & IOC Triage")
-        st.markdown("Analyze IP addresses, domains, or URLs against VirusTotal and AbuseIPDB feeds with granular parsing.")
+        st.markdown("# Live Threat Intelligence & IOC Triage")
+        st.markdown("<p style='color: #9ca3af;'>Analyze IP addresses, domains, or URLs against VirusTotal and AbuseIPDB feeds with granular parsing.</p>", unsafe_allow_html=True)
         
         indicator = st.text_input("Enter Indicator (IP Address, Domain, or URL)", placeholder="e.g., 8.8.8.8 or example.com")
         
-        if st.button("Run Threat Triage Analysis", type="primary", use_container_width=True):
+        if st.button("Run Threat Triage Analysis", use_container_width=True):
             if indicator:
                 with st.spinner(f"Querying threat intelligence feeds for `{indicator}`..."):
                     ti = ThreatIntelService(vt_key, abuse_key)
@@ -829,7 +916,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                     col_vt, col_abuse = st.columns(2)
                     
                     with col_vt:
-                        st.subheader("🌐 VirusTotal Security Telemetry")
+                        st.subheader("VirusTotal Security Telemetry")
                         vt_sum = report['vt_summary']
                         if 'error' in vt_sum:
                             st.error(vt_sum['error'])
@@ -848,7 +935,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                                 st.json(report['vt_raw'])
                                 
                     with col_abuse:
-                        st.subheader("🚨 AbuseIPDB Reputation Telemetry")
+                        st.subheader("AbuseIPDB Reputation Telemetry")
                         abuse_sum = report['abuse_summary']
                         if 'error' in abuse_sum:
                             st.error(abuse_sum['error'])
