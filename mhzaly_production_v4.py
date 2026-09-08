@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.1 - CLEAN SEPARATED EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.2 - TELEMETRY FIRST EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
@@ -87,7 +87,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.1'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.2'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -436,11 +436,11 @@ def main():
         module = st.radio(
             "Purple Team Hub Menu",
             [
+                "Command Telemetry Center",
                 "⚡ Autonomous AI-Agent Red/Blue Pipeline",
                 "🤖 AI Security Chatbot",
                 "🛡️ Blue Team SOC Log & SIEM Simulator",
                 "📊 Automated Sigma Rule Generator",
-                "Command Telemetry Center",
                 "Bug Bounty Recon & Fuzzing",
                 "Network Infrastructure Audit",
                 "Enterprise NVD Intelligence",
@@ -455,7 +455,17 @@ def main():
             st.session_state.authenticated = False
             st.rerun()
 
-    if module == "⚡ Autonomous AI-Agent Red/Blue Pipeline":
+    if module == "Command Telemetry Center":
+        st.markdown("# Purple Team Operations Center - Command Dashboard")
+        st.markdown("Aggregated telemetry across offensive recon and defensive SOC monitoring.")
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Threat Level", "ELEVATED", "Orange")
+        c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
+        c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
+        c4.metric("SQLite DB", "Connected", "Active")
+
+    elif module == "⚡ Autonomous AI-Agent Red/Blue Pipeline":
         st.markdown("# ⚡ Fully Autonomous Purple Team Intelligence Pipeline")
         st.markdown("Enter target scope. The AI Agent executes live multi-API recon, threat triage, soft-404 filtered fuzzing, NVD vulnerability correlation, and unified architectural hardening guidance.")
 
@@ -693,16 +703,6 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                             st.error(f"Error: {e}")
             else:
                 st.warning("Please enter a CVE ID or attack description.")
-
-    elif module == "Command Telemetry Center":
-        st.markdown("# Purple Team Operations Center - Command Dashboard")
-        st.markdown("Aggregated telemetry across offensive recon and defensive SOC monitoring.")
-        
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Threat Level", "ELEVATED", "Orange")
-        c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
-        c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
         st.markdown("# Target Reconnaissance & Sensitive Endpoint Fuzzing")
