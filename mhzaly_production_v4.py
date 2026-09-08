@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v9.1 - FULL DETAILED SCALE
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v10.0 - ULTIMATE EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Offensive Security, Bug Bounty Recon & Blue Team SOC Suite
 - Interactive AI Security Chatbot (Powered by Groq OpenAI-Compatible API)
 - Real-Time Target Fingerprinting & Sensitive Endpoint Fuzzing
 - NVD v2.0 REST Client with Accelerated API Key Support
-- Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP safe)
+- Live VirusTotal & AbuseIPDB Threat Intelligence Triage (Domain & IP Safe Guard)
 - Advanced Network Recon: DNS Enumeration, Port Scanning, SSL & Headers Audit
 - Offensive Payload Encoder, Decoder & Hashing Utility
-- Automated Finding Report Exporter (JSON / Markdown)
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
@@ -89,7 +88,7 @@ class BugBountyReconEngine:
         # 2. HTTP Probing & Fingerprinting
         session = requests.Session()
         session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/7.0'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) BugBountyEliteHunter/8.0'
         })
         
         try:
@@ -196,7 +195,7 @@ class NVDIntelligenceClient:
         return vulnerabilities
 
 class ThreatIntelService:
-    """Live VirusTotal & AbuseIPDB Triage Engine (Domain & IP Safe)"""
+    """Live VirusTotal & AbuseIPDB Triage Engine (Strictly Domain & IP Safe)"""
     def __init__(self, vt_key: str, abuse_key: str):
         self.vt_key = vt_key
         self.abuse_key = abuse_key
@@ -206,6 +205,7 @@ class ThreatIntelService:
         is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
         is_url = indicator.startswith(('http://', 'https://'))
 
+        # VirusTotal Check (Accepts IP, Domain, or URL)
         if self.vt_key:
             try:
                 headers = {'x-apikey': self.vt_key}
@@ -225,6 +225,7 @@ class ThreatIntelService:
         else:
             results['virustotal'] = {'error': 'VirusTotal API key is not configured in secrets.'}
 
+        # AbuseIPDB Check (Safeguarded: Only executes if input is a valid IP address)
         if self.abuse_key:
             if is_ip:
                 try:
@@ -238,7 +239,7 @@ class ThreatIntelService:
                 except Exception as e:
                     results['abuseipdb'] = {'error': str(e)}
             else:
-                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL.'}
+                results['abuseipdb'] = {'info': 'Skipped AbuseIPDB query because input is a Domain or URL (AbuseIPDB only accepts IPv4/IPv6 addresses).'}
         else:
             results['abuseipdb'] = {'error': 'AbuseIPDB API key is not configured in secrets.'}
 
@@ -427,7 +428,7 @@ def main():
 
     if module == "🤖 AI Security Chatbot":
         st.markdown("# AI Security Operations & Bug Bounty Chatbot")
-        st.markdown("Ask anything about security, exploit vectors, recon strategies, or SOC playbooks. Powered by Groq AI.")
+        st.markdown("Ask anything about security, exploit vectors, WAF bypass, or Sigma detection rules. Powered by Groq AI.")
 
         if "messages" not in st.session_state:
             st.session_state.messages = [
@@ -452,9 +453,9 @@ def main():
                         try:
                             headers = {'Authorization': f'Bearer {groq_key}', 'Content-Type': 'application/json'}
                             payload = {
-                                'model': 'openai/gpt-oss-120b',
+                                'model': 'llama-3.3-70b-versatile',
                                 'messages': [
-                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor.'},
+                                    {'role': 'system', 'content': 'You are an elite Cybersecurity Expert, Bug Bounty Mentor, and Red/Blue Team Advisor. Provide detailed code, payloads, and defense mechanisms.'},
                                     *[ {'role': m['role'], 'content': m['content']} for m in st.session_state.messages ]
                                 ],
                                 'temperature': 0.6,
@@ -477,7 +478,7 @@ def main():
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
-        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
+        c3.metric("Groq AI Chatbot", "Online" if groq_key else "Offline", "llama-3.3-70b-versatile")
         c4.metric("SQLite DB", "Connected", "Active")
 
     elif module == "Bug Bounty Recon & Fuzzing":
@@ -618,7 +619,7 @@ def main():
                         if abuse_key:
                             st.json(report['abuseipdb'])
                         else:
-                            st.info("AbuseIPDB API Key not configured or skipped.")
+                            st.info("AbuseIPDB API Key not configured or skipped for non-IP input.")
             else:
                 st.warning("Please provide an indicator.")
 
@@ -664,7 +665,7 @@ def main():
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Chatbot:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Chatbot:** {'Active (llama-3.3-70b-versatile)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
