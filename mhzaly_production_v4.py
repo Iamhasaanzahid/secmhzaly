@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.7 - FOOLPROOF SECRETS EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.8 - ULTIMATE FIX EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
@@ -91,7 +91,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.7'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.8'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -395,14 +395,22 @@ class SecurityDatabase:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def get_secret(key: str, default: str = "") -> str:
-    """Foolproof secret resolver checking st.secrets dictionary and environment variables."""
+    """Robust multi-source secret resolver checking st.secrets and os.environ."""
+    # 1. Try st.secrets direct lookup
     try:
         if key in st.secrets:
             return st.secrets[key]
     except Exception:
         pass
-    
-    # Fallback to environment variables
+        
+    # 2. Try nested st.secrets lookup or alternative key names
+    try:
+        if key.lower() in st.secrets:
+            return st.secrets[key.lower()]
+    except Exception:
+        pass
+
+    # 3. Try Environment Variables
     if key in os.environ:
         return os.environ[key]
         
@@ -519,10 +527,10 @@ def main():
                     st.error("Authentication failed: Invalid credentials.")
         return
 
-    # Foolproof API Key Resolution
-    vt_key = get_secret("VIRUSTOTAL_API_KEY")
-    abuse_key = get_secret("ABUSEIPDB_API_KEY")
-    groq_key = get_secret("GROQ_API_KEY")
+    # Foolproof API Key Resolution (Checking multiple naming variants)
+    vt_key = get_secret("VIRUSTOTAL_API_KEY", get_secret("VT_API_KEY"))
+    abuse_key = get_secret("ABUSEIPDB_API_KEY", get_secret("ABUSE_API_KEY"))
+    groq_key = get_secret("GROQ_API_KEY", get_secret("GROQ_KEY"))
     nvd_key = get_secret("NVD_API_KEY")
     
     db = SecurityDatabase()
