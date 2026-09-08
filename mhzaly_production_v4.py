@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.8 - ULTIMATE FIX EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.9 - CHATBOT FIX EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
 - Dual-Operator Authentication System with Robust Fallback Dictionary (mhzaly & naqaab50)
 - Foolproof Multi-Tier API Key Resolution (Secrets.toml + Environment Variables + Fallback)
-- Autonomous AI Agent Pipeline with Smart Groq Fallback Synthesis & Soft-404 Filters
-- Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
-- Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
-- Separate Automated Sigma Rule & YARA Detection Generator Module
+- Fully Operational Groq AI Integration for Chatbot and Threat Analysis Pipeline
 - Autonomous Target Fingerprinting, Smart Endpoint Fuzzing & Log Parsing Simulator
 - NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement & Safety Filters
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
@@ -91,7 +88,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.8'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.9'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -396,21 +393,18 @@ class SecurityDatabase:
 
 def get_secret(key: str, default: str = "") -> str:
     """Robust multi-source secret resolver checking st.secrets and os.environ."""
-    # 1. Try st.secrets direct lookup
     try:
         if key in st.secrets:
             return st.secrets[key]
     except Exception:
         pass
         
-    # 2. Try nested st.secrets lookup or alternative key names
     try:
         if key.lower() in st.secrets:
             return st.secrets[key.lower()]
     except Exception:
         pass
 
-    # 3. Try Environment Variables
     if key in os.environ:
         return os.environ[key]
         
@@ -527,7 +521,7 @@ def main():
                     st.error("Authentication failed: Invalid credentials.")
         return
 
-    # Foolproof API Key Resolution (Checking multiple naming variants)
+    # Foolproof API Key Resolution
     vt_key = get_secret("VIRUSTOTAL_API_KEY", get_secret("VT_API_KEY"))
     abuse_key = get_secret("ABUSEIPDB_API_KEY", get_secret("ABUSE_API_KEY"))
     groq_key = get_secret("GROQ_API_KEY", get_secret("GROQ_KEY"))
@@ -639,7 +633,6 @@ def main():
                         except Exception:
                             pass
 
-                    # Robust fallback synthesis if Groq is missing or timed out
                     if not ai_analysis_text:
                         ai_analysis_text = f"""
 ### Autonomous Purple Team Synthesis & Hardening Review
@@ -735,8 +728,8 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                 st.markdown(prompt)
 
             with st.chat_message("assistant"):
-                if not groq_key:
-                    response_text = "Error: Groq API Key is not configured in your Streamlit secrets."
+                if not groq_key or groq_key == "etc":
+                    response_text = "❌ Error: Groq API Key is not configured correctly in your Streamlit secrets."
                     st.markdown(response_text)
                 else:
                     with st.spinner("Analyzing via Groq AI..."):
@@ -751,13 +744,13 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                                 'temperature': 0.6,
                                 'max_tokens': 1500
                             }
-                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=25)
+                            resp = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers, timeout=30)
                             if resp.status_code == 200:
                                 response_text = resp.json()['choices'][0]['message']['content']
                             else:
-                                response_text = f"API Error Code: {resp.status_code} - {resp.text}"
+                                response_text = f"❌ Groq API Error [{resp.status_code}]: {resp.text}"
                         except Exception as e:
-                            response_text = f"Connection failed: {e}"
+                            response_text = f"❌ Connection failed: {e}"
                     st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
 
@@ -800,8 +793,8 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         cve_input = st.text_input("Enter CVE ID or Attack Description", placeholder="e.g., CVE-2021-44228 or Path Traversal Attack")
         if st.button("Generate Sigma Detection Rule", use_container_width=True):
             if cve_input:
-                if not groq_key:
-                    st.error("Groq API Key is missing in secrets.")
+                if not groq_key or groq_key == "etc":
+                    st.error("Groq API Key is missing or invalid in secrets.")
                 else:
                     with st.spinner("Generating professional Sigma detection rule via Groq AI..."):
                         try:
@@ -820,7 +813,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
                                 sigma_res = resp.json()['choices'][0]['message']['content']
                                 st.code(sigma_res, language='yaml')
                             else:
-                                st.error(f"API Error: {resp.status_code}")
+                                st.error(f"API Error [{resp.status_code}]: {resp.text}")
                         except Exception as e:
                             st.error(f"Error: {e}")
             else:
@@ -1033,7 +1026,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.write(f"**NVD API Key:** {'Accelerated' if nvd_key else 'Standard'}")
         st.write(f"**VirusTotal API:** {'Active' if vt_key else 'Missing'}")
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
-        st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
+        st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key and groq_key != 'etc' else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
 
 if __name__ == "__main__":
