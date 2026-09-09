@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.6 - COMPLETE COMPREHENSIVE EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.7 - FULL ORIGINAL RESTORED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
@@ -183,7 +183,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.6'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.7'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -488,7 +488,7 @@ class SecurityDatabase:
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Purple Team Operations Suite v18.6",
+        page_title="MHZALY Purple Team Operations Suite v18.7",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -585,7 +585,7 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
                 <div class="saas-card" style="text-align: center;">
-                    <h2>MHZALY SaaS Portal v18.6</h2>
+                    <h2>MHZALY SaaS Portal v18.7</h2>
                     <p style="color: #9ca3af;">Enterprise Purple Team Operations Suite</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -646,7 +646,7 @@ def main():
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
-        c2.metric("Suite Version", "v18.6 SaaS", "Advanced")
+        c2.metric("Suite Version", "v18.7 SaaS", "Advanced")
         c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
@@ -1163,7 +1163,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
         st.write(f"**Pillow / EXIF Support:** {'Available' if PIL_AVAILABLE else 'Missing (Add Pillow to requirements.txt)'}")
-        st.write("**New v18.6 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
+        st.write("**New v18.7 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
 
 if __name__ == "__main__":
     main()
