@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.0 - COMPLETE ENTERPRISE EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.4 - FULL PRODUCTION EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md)
 - Dedicated Interactive AI Security Chatbot (Powered by Groq GPT-OSS 120B)
-- Automated Sigma Rule & YARA Detection Generator Module
+- Separate Automated Sigma Rule & YARA Detection Generator Module
 - Autonomous Target Fingerprinting, Smart Endpoint Fuzzing & Log Parsing Simulator
 - NVD v2.0 REST Client with AI-Driven Dynamic Query Refinement & Safety Filters
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive/Defensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
-- **NEW v18.0:** Advanced Origin IP Tracer & VPN/CDN Bypass Intelligence Module
-- **NEW v18.0:** EXIF Metadata & Image Geolocation Extraction Forensics Module
-- **NEW v18.0:** Heuristic Real vs. Fake Attack Classification & Alert Fatigue Reducer
+- Advanced Origin IP Tracer & VPN/CDN Bypass Intelligence Module
+- EXIF Metadata & Image Geolocation Extraction Forensics Module
+- Heuristic Real vs. Fake Attack Classification & Alert Fatigue Reducer
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
@@ -162,7 +162,10 @@ class BugBountyReconEngine:
         report = {'target': target, 'status_code': None, 'server': 'Hidden / Unknown', 'technologies': [], 'exposed_files': [], 'dns': {}}
         try:
             clean_target = target.replace('https://', '').replace('http://', '').split('/')[0]
-            target_url = f"https://{target}" if not target.startswith(('http://', 'https://')) else target
+            if not target.startswith(('http://', 'https://')):
+                target_url = f"https://{target}"
+            else:
+                target_url = target
                 
             for rtype in ['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA']:
                 try:
@@ -172,7 +175,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.0'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.4'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -182,12 +185,18 @@ class BugBountyReconEngine:
             body = base_homepage_text
             headers_str = str(resp.headers).lower()
             
-            if 'wp-content' in body or 'wordpress' in headers_str: report['technologies'].append('WordPress')
-            if 'laravel' in headers_str or 'laravel_session' in str(resp.cookies): report['technologies'].append('Laravel')
-            if 'react' in body or '_next' in body or 'data-reactroot' in body: report['technologies'].append('React')
-            if 'express' in headers_str or 'connect.sid' in str(resp.cookies): report['technologies'].append('Express')
-            if 'cloudflare' in headers_str: report['technologies'].append('Cloudflare')
-            if 'django' in headers_str or 'csrftoken' in str(resp.cookies): report['technologies'].append('Django')
+            if 'wp-content' in body or 'wordpress' in headers_str:
+                report['technologies'].append('WordPress')
+            if 'laravel' in headers_str or 'laravel_session' in str(resp.cookies):
+                report['technologies'].append('Laravel')
+            if 'react' in body or '_next' in body or 'data-reactroot' in body:
+                report['technologies'].append('React')
+            if 'express' in headers_str or 'connect.sid' in str(resp.cookies):
+                report['technologies'].append('Express')
+            if 'cloudflare' in headers_str:
+                report['technologies'].append('Cloudflare')
+            if 'django' in headers_str or 'csrftoken' in str(resp.cookies):
+                report['technologies'].append('Django')
 
             fuzz_paths = [
                 '/.env', '/robots.txt', '/sitemap.xml', '/git/config', 
@@ -205,12 +214,16 @@ class BugBountyReconEngine:
                     p_resp = session.get(test_url, timeout=3, verify=False)
                     if p_resp.status_code in [200, 403, 401]:
                         p_text = p_resp.text.lower()
+                        
+                        # Filter out Streamlit soft-404 pages
                         if 'streamlit' in p_text and 'root' in p_text and len(p_text) > 500:
                             if abs(len(p_text) - len(base_homepage_text)) < 200:
                                 continue
+                                
                         if p_resp.status_code == 200 and len(p_text) > 10:
                             if any(err in p_text for err in ["not found", "404 page", "does not exist", "object not found"]):
                                 continue
+                                
                         report['exposed_files'].append({'path': path, 'status': p_resp.status_code, 'size': len(p_resp.text)})
                 except Exception:
                     pass
@@ -227,17 +240,25 @@ class NVDIntelligenceClient:
         vulnerabilities = []
         try:
             params = {'keywordSearch': keyword, 'resultsPerPage': min(max_results, 30)}
-            headers = {'apiKey': self.nvd_key} if self.nvd_key else {}
+            headers = {}
+            if self.nvd_key:
+                headers['apiKey'] = self.nvd_key
+                
             response = requests.get(self.base_url, params=params, headers=headers, timeout=12)
             if response.status_code == 200:
                 data = response.json()
                 for item in data.get('vulnerabilities', []):
                     cve = item.get('cve', {})
                     cve_id = cve.get('id', 'UNKNOWN')
+                    
                     descriptions = cve.get('descriptions', [])
                     desc = descriptions[0].get('value', 'No description.') if descriptions else 'No description.'
-                    score, severity, vector = 0.0, "UNKNOWN", "N/A"
+                    
+                    score = 0.0
+                    severity = "UNKNOWN"
+                    vector = "N/A"
                     metrics = cve.get('metrics', {})
+                    
                     if 'cvssMetricV31' in metrics and metrics['cvssMetricV31']:
                         cvss_data = metrics['cvssMetricV31'][0].get('cvssData', {})
                         score = float(cvss_data.get('baseScore', 0.0))
@@ -248,10 +269,16 @@ class NVDIntelligenceClient:
                         score = float(cvss_data.get('baseScore', 0.0))
                         severity = cvss_data.get('baseSeverity', 'UNKNOWN')
                         vector = cvss_data.get('vectorString', 'N/A')
+                        
                     if score >= 4.0:
                         vulnerabilities.append(VulnerabilityRecord(
-                            cve_id=cve_id, title=cve_id, description=desc, severity=severity.upper(),
-                            cvss_score=score, vector_string=vector, affected_configurations=[keyword],
+                            cve_id=cve_id,
+                            title=cve_id,
+                            description=desc,
+                            severity=severity.upper(),
+                            cvss_score=score,
+                            vector_string=vector,
+                            affected_configurations=[keyword],
                             published_date=str(cve.get('published', ''))[:10],
                             remediation=f"Apply official vendor patch or configure WAF signature to mitigate {cve_id}."
                         ))
@@ -266,11 +293,13 @@ class ThreatIntelService:
 
     def triage_indicator(self, indicator: str) -> Dict[str, Any]:
         results = {
-            'indicator': indicator, 'vt_raw': None, 
+            'indicator': indicator, 
+            'vt_raw': None, 
             'vt_summary': {'malicious': 0, 'suspicious': 0, 'harmless': 0, 'undetected': 0, 'reputation': 0, 'tags': [], 'registrar': 'N/A'},
             'abuse_raw': None,
             'abuse_summary': {'score': 0, 'reports': 0, 'country': 'N/A', 'isp': 'N/A', 'lastReported': 'N/A'}
         }
+        
         try:
             is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', indicator))
             is_url = indicator.startswith(('http://', 'https://'))
@@ -284,12 +313,14 @@ class ThreatIntelService:
                         url = f"https://www.virustotal.com/api/v3/ip_addresses/{indicator}"
                     else:
                         url = f"https://www.virustotal.com/api/v3/domains/{indicator}"
+                    
                     resp = requests.get(url, headers=headers, timeout=10)
                     if resp.status_code == 200:
                         vt_json = resp.json()
                         results['vt_raw'] = vt_json
                         attrs = vt_json.get('data', {}).get('attributes', {})
                         stats = attrs.get('last_analysis_stats', {})
+                        
                         results['vt_summary']['malicious'] = int(stats.get('malicious', 0))
                         results['vt_summary']['suspicious'] = int(stats.get('suspicious', 0))
                         results['vt_summary']['harmless'] = int(stats.get('harmless', 0))
@@ -297,6 +328,8 @@ class ThreatIntelService:
                         results['vt_summary']['reputation'] = int(attrs.get('reputation', 0))
                         results['vt_summary']['tags'] = attrs.get('tags', [])
                         results['vt_summary']['registrar'] = attrs.get('registrar', attrs.get('as_owner', 'N/A'))
+                    else:
+                        results['vt_summary']['error'] = f"VT HTTP Status: {resp.status_code}"
                 except Exception as e:
                     results['vt_summary']['error'] = str(e)
 
@@ -309,15 +342,19 @@ class ThreatIntelService:
                         abuse_json = resp.json()
                         results['abuse_raw'] = abuse_json
                         data = abuse_json.get('data', {})
+                        
                         results['abuse_summary']['score'] = int(data.get('abuseConfidenceScore', 0))
                         results['abuse_summary']['reports'] = int(data.get('totalReports', 0))
                         results['abuse_summary']['country'] = str(data.get('countryCode', 'N/A'))
                         results['abuse_summary']['isp'] = str(data.get('isp', 'N/A'))
                         results['abuse_summary']['lastReported'] = str(data.get('lastReportedAt', 'Never'))
+                    else:
+                        results['abuse_summary']['error'] = f"AbuseIPDB Status: {resp.status_code}"
                 except Exception as e:
                     results['abuse_summary']['error'] = str(e)
         except Exception as e:
             logger.error(f"ThreatIntel error: {e}")
+            
         return results
 
 class AdvancedReconEngine:
@@ -438,28 +475,34 @@ class SecurityDatabase:
             return []
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3. STREAMLIT ENTERPRISE UI (MODERN SaaS CSS & ALL MODULES)
+# 3. STREAMLIT ENTERPRISE UI (MODERN SaaS CSS & PURPLE TEAM HUB)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Purple Team Operations Suite v18.0",
+        page_title="MHZALY Purple Team Operations Suite v18.4",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
     )
 
+    # Modern SaaS Dark Glassmorphism Styling Injection
     st.markdown("""
         <style>
+        /* Main background & typography */
         .stApp {
             background-color: #0b0f19;
             color: #f3f4f6;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
+        
+        /* Sidebar styling */
         [data-testid="stSidebar"] {
             background-color: #111827;
             border-right: 1px solid #1f2937;
         }
+        
+        /* Glassmorphism Cards */
         .saas-card {
             background: rgba(17, 24, 39, 0.7);
             border: 1px solid rgba(75, 85, 99, 0.3);
@@ -469,6 +512,8 @@ def main():
             margin-bottom: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
+        
+        /* Custom Buttons */
         .stButton>button {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
@@ -484,6 +529,8 @@ def main():
             box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
             transform: translateY(-1px);
         }
+        
+        /* Metric Cards Customization */
         [data-testid="stMetric"] {
             background: rgba(17, 24, 39, 0.8);
             border: 1px solid rgba(59, 130, 246, 0.2);
@@ -499,12 +546,20 @@ def main():
             color: #60a5fa !important;
             font-weight: 700;
         }
+        
+        /* Inputs & Textareas */
         .stTextInput>div>div>input, .stTextArea>div>div>textarea {
             background-color: #1f2937;
             color: #f3f4f6;
             border: 1px solid #374151;
             border-radius: 8px;
         }
+        .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Headers styling */
         h1, h2, h3 {
             color: #f9fafb;
             font-weight: 700;
@@ -522,7 +577,7 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
                 <div class="saas-card" style="text-align: center;">
-                    <h2>MHZALY SaaS Portal v18.0</h2>
+                    <h2>MHZALY SaaS Portal v18.4</h2>
                     <p style="color: #9ca3af;">Enterprise Purple Team Operations Suite</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -583,7 +638,7 @@ def main():
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
-        c2.metric("Suite Version", "v18.0 SaaS", "Advanced")
+        c2.metric("Suite Version", "v18.4 SaaS", "Advanced")
         c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
@@ -1097,7 +1152,7 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
         st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
-        st.write("**New v18.0 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
+        st.write("**New v18.4 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
 
 if __name__ == "__main__":
     main()
