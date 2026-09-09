@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.4 - FULL PRODUCTION EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.6 - COMPLETE COMPREHENSIVE EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
@@ -41,8 +41,14 @@ import urllib.parse
 import base64
 import hashlib
 import concurrent.futures
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSSTAGS
+
+# Safe import for Pillow (EXIF Forensics)
+try:
+    from PIL import Image
+    from PIL.ExifTags import TAGS, GPSSTAGS
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -112,6 +118,8 @@ class OriginIPBypassEngine:
 class ExifForensicsEngine:
     @staticmethod
     def extract_metadata(image_file) -> Dict[str, Any]:
+        if not PIL_AVAILABLE:
+            return {'metadata': {}, 'gps_coordinates': None, 'error': "Pillow library is not installed in the environment."}
         extracted = {'metadata': {}, 'gps_coordinates': None, 'error': None}
         try:
             image = Image.open(image_file)
@@ -175,7 +183,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.4'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.6'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -480,7 +488,7 @@ class SecurityDatabase:
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Purple Team Operations Suite v18.4",
+        page_title="MHZALY Purple Team Operations Suite v18.6",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -577,7 +585,7 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
                 <div class="saas-card" style="text-align: center;">
-                    <h2>MHZALY SaaS Portal v18.4</h2>
+                    <h2>MHZALY SaaS Portal v18.6</h2>
                     <p style="color: #9ca3af;">Enterprise Purple Team Operations Suite</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -638,7 +646,7 @@ def main():
         
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Threat Level", "ELEVATED", "Orange")
-        c2.metric("Suite Version", "v18.4 SaaS", "Advanced")
+        c2.metric("Suite Version", "v18.6 SaaS", "Advanced")
         c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
 
@@ -668,6 +676,8 @@ def main():
     elif module == "EXIF Image Geolocation Forensics":
         st.markdown("# EXIF Image Geolocation & Metadata Extractor")
         st.markdown("<p style='color: #9ca3af;'>Upload any suspicious image, photo, or asset to extract GPS coordinates, camera maker details, and hidden metadata.</p>", unsafe_allow_html=True)
+        if not PIL_AVAILABLE:
+            st.error("Warning: 'Pillow' library is not detected in your environment. Please add 'Pillow' to your requirements.txt to enable image forensics.")
         uploaded_image = st.file_uploader("Upload Target Image (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"])
         if uploaded_image and st.button("Extract EXIF Forensics", use_container_width=True):
             with st.spinner("Parsing image binary and decoding metadata tags..."):
@@ -1152,7 +1162,8 @@ Automated Purple Team intelligence gathering was completed against `{pipeline_ta
         st.write(f"**AbuseIPDB API:** {'Active' if abuse_key else 'Missing'}")
         st.write(f"**Groq AI Engine:** {'Active (openai/gpt-oss-120b)' if groq_key else 'Missing'}")
         st.write("**SQLite Database:** Initialized")
-        st.write("**New v18.4 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
+        st.write(f"**Pillow / EXIF Support:** {'Available' if PIL_AVAILABLE else 'Missing (Add Pillow to requirements.txt)'}")
+        st.write("**New v18.6 Modules:** Origin IP Tracer, EXIF Geolocation, Heuristic SOC Classifier")
 
 if __name__ == "__main__":
     main()
