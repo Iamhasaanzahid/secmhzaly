@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.7 - FULL 1000+ LINES EDITION
+MHZALY BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v17.4 - MODERN SaaS EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Modern Dark Glassmorphism SaaS UI with Custom CSS, Glowing Accents & Sleek Cards
@@ -14,8 +14,6 @@ Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Autom
 - Deep Live VirusTotal & AbuseIPDB Threat Intelligence Triage with Granular Safe Parsing
 - Advanced Network Recon: Real-time Multi-threaded Port Scanning, DNS, SSL & Headers Audit
 - Offensive/Defensive Payload Encoder, Decoder, Hasher & Custom Mutator Utility
-- Advanced Origin IP Tracer & VPN/CDN Bypass Intelligence Module
-- Heuristic Real vs. Fake Attack Classification & Alert Fatigue Reducer
 - SQLite Persistence & Audit Log History Tracking
 
 Author: Muhammad Hassaan Zahid
@@ -71,58 +69,6 @@ class VulnerabilityRecord:
 # 2. ENTERPRISE RECON, SOC & AI-AGENTIC INTELLIGENCE ENGINES
 # ═══════════════════════════════════════════════════════════════════════════════
 
-class OriginIPBypassEngine:
-    @staticmethod
-    def trace_origin(domain: str) -> Dict[str, Any]:
-        report = {'domain': domain, 'direct_ips': [], 'subdomains_checked': [], 'potential_origin': None, 'cdn_detected': False}
-        try:
-            clean_domain = domain.replace('https://', '').replace('http://', '').split('/')[0]
-            try:
-                answers = dns.resolver.resolve(clean_domain, 'A')
-                report['direct_ips'] = [str(r) for r in answers]
-            except Exception:
-                pass
-
-            try:
-                resp = requests.get(f"https://{clean_domain}", timeout=5, verify=False)
-                headers_str = str(resp.headers).lower()
-                if any(cdn in headers_str for cdn in ['cloudflare', 'akamai', 'cloudfront', 'fastly', 'incapsula']):
-                    report['cdn_detected'] = True
-            except Exception:
-                pass
-
-            probe_subdomains = [f"origin.{clean_domain}", f"direct.{clean_domain}", f"cpanel.{clean_domain}", f"mail.{clean_domain}", f"ftp.{clean_domain}"]
-            for sub in probe_subdomains:
-                report['subdomains_checked'].append(sub)
-                try:
-                    sub_answers = dns.resolver.resolve(sub, 'A')
-                    ips = [str(r) for r in sub_answers]
-                    if ips and ips != report['direct_ips']:
-                        report['potential_origin'] = {'subdomain': sub, 'ip': ips[0]}
-                        break
-                except Exception:
-                    pass
-        except Exception as e:
-            report['error'] = str(e)
-        return report
-
-class HeuristicAttackClassifier:
-    @staticmethod
-    def classify_attack(log_line: str) -> Dict[str, str]:
-        l_lower = log_line.lower()
-        if any(p in l_lower for p in ['union select', 'sqlmap', 'drop table', 'waitfor delay']):
-            return {'classification': 'Real Exploit Attempt', 'severity': 'Critical', 'category': 'SQL Injection (SQLi)'}
-        elif any(p in l_lower for p in ['<script>', 'onerror=', 'onload=', 'alert(']):
-            return {'classification': 'Real Exploit Attempt', 'severity': 'High', 'category': 'Cross-Site Scripting (XSS)'}
-        elif any(p in l_lower for p in ['../', 'etc/passwd', 'win.ini', 'boot.ini']):
-            return {'classification': 'Real Exploit Attempt', 'severity': 'High', 'category': 'Path Traversal / LFI'}
-        elif any(p in l_lower for p in ['wpscan', 'nikto', 'dirbuster', 'gobuster', 'sqlmap/']):
-            return {'classification': 'Automated Recon Scanner', 'severity': 'Medium', 'category': 'Scanner Probe (Noise)'}
-        elif '404' in l_lower or '403' in l_lower:
-            return {'classification': 'Failed / Bogus Request', 'severity': 'Low', 'category': 'Soft-404 / Probe'}
-        else:
-            return {'classification': 'Standard Web Traffic', 'severity': 'Info', 'category': 'Normal Operations'}
-
 class BugBountyReconEngine:
     @staticmethod
     def deep_recon(target: str) -> Dict[str, Any]:
@@ -142,7 +88,7 @@ class BugBountyReconEngine:
                     report['dns'][rtype] = []
 
             session = requests.Session()
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/18.7'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) PurpleTeamHunter/17.4'})
             
             resp = session.get(target_url, timeout=8, verify=False, allow_redirects=True)
             report['status_code'] = resp.status_code
@@ -447,7 +393,7 @@ class SecurityDatabase:
 
 def main():
     st.set_page_config(
-        page_title="MHZALY Purple Team Operations Suite v18.7",
+        page_title="MHZALY Purple Team Operations Suite",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -544,7 +490,7 @@ def main():
             st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
                 <div class="saas-card" style="text-align: center;">
-                    <h2>MHZALY SaaS Portal v18.7</h2>
+                    <h2>MHZALY SaaS Portal</h2>
                     <p style="color: #9ca3af;">Enterprise Purple Team Operations Suite</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -578,8 +524,6 @@ def main():
             "Purple Team Hub Menu",
             [
                 "Command Telemetry Center",
-                "Advanced Origin IP & VPN Bypass",
-                "Heuristic Real vs Fake Attack SOC",
                 "Autonomous AI-Agent Red/Blue Pipeline",
                 "AI Security Chatbot",
                 "Blue Team SOC Log & SIEM Simulator",
@@ -607,48 +551,6 @@ def main():
         c2.metric("NVD API Key", "Accelerated" if nvd_key else "Standard", "NIST v2.0")
         c3.metric("Groq AI Engine", "Online" if groq_key else "Offline", "openai/gpt-oss-120b")
         c4.metric("SQLite DB", "Connected", "Active")
-
-    elif module == "Advanced Origin IP & VPN Bypass":
-        st.markdown("# Advanced Origin IP & CDN/VPN Bypass Tracer")
-        st.markdown("<p style='color: #9ca3af;'>Bypass Cloudflare, Akamai, or reverse proxies to discover true origin servers and backend direct IPs.</p>", unsafe_allow_html=True)
-        target_domain = st.text_input("Target Domain", placeholder="e.g., target-domain.com")
-        if st.button("Trace True Origin Server", use_container_width=True):
-            if target_domain:
-                with st.spinner(f"Analyzing DNS history and probing direct origin subdomains for {target_domain}..."):
-                    res = OriginIPBypassEngine.trace_origin(target_domain)
-                    db.log_activity("Origin IP Tracer", target_domain, "Completed")
-                    st.success("Origin Trace Complete.")
-                    c1, c2 = st.columns(2)
-                    c1.metric("CDN / Proxy Detected", "Yes" if res['cdn_detected'] else "No")
-                    c2.metric("Direct Public IPs", len(res['direct_ips']))
-                    st.markdown("### Public Resolved IPs:")
-                    for ip in res['direct_ips']:
-                        st.code(ip)
-                    if res['potential_origin']:
-                        st.warning(f"Potential Direct Origin Discovered! Subdomain: `{res['potential_origin']['subdomain']}` -> IP: `{res['potential_origin']['ip']}`")
-                    else:
-                        st.info("No alternate origin subdomains leaked on standard wordlists.")
-            else:
-                st.warning("Please enter a target domain.")
-
-    elif module == "Heuristic Real vs Fake Attack SOC":
-        st.markdown("# Heuristic Real vs. Fake Attack Classifier (Alert Fatigue Reducer)")
-        st.markdown("<p style='color: #9ca3af;'>Paste raw logs to filter noise, botnet probes, and identify genuine targeted exploits vs. fake/automated scanning.</p>", unsafe_allow_html=True)
-        raw_log_input = st.text_area("Paste Raw Server / Access Logs", placeholder="127.0.0.1 - - [09/Sep/2026] 'GET /index.php?id=1 UNION SELECT 1,2-- HTTP/1.1' 200", height=150)
-        if st.button("Classify Attacks & Reduce Noise", use_container_width=True):
-            if raw_log_input:
-                with st.spinner("Running heuristic classification..."):
-                    lines = raw_log_input.split('\n')
-                    analysis_results = []
-                    for idx, line in enumerate(lines, 1):
-                        if line.strip():
-                            classification = HeuristicAttackClassifier.classify_attack(line)
-                            analysis_results.append({'line_no': idx, 'log': line, **classification})
-                    st.success(f"Processed {len(lines)} log lines.")
-                    if analysis_results:
-                        st.dataframe(pd.DataFrame(analysis_results), use_container_width=True)
-            else:
-                st.warning("Please paste log data.")
 
     elif module == "Autonomous AI-Agent Red/Blue Pipeline":
         st.markdown("# Fully Autonomous Purple Team Intelligence Pipeline")
