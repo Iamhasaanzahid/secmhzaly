@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.2 - ELITE HACKER EDITION
+NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.3 - ELITE HACKER EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Cyberpunk Dark Hacker Theme with Monospace Fonts, Glowing Neon Accents & Sleek Cards
 - Secure Authentication Gateway: Operator Email/Password (Sign In / Create Account with Email OTP Verification)
+- Trusted Email Domain Guard: Strictly enforces Gmail, Yahoo, Proton, Apple & blocks temp/disposable mail
+- Direct Auto-Login on Successful OTP Verification (Zero redundant login friction)
 - Personal Persistent API Key Vault (SQLite-backed operator key management)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md, .json, .csv)
@@ -56,8 +58,17 @@ logger = logging.getLogger(__name__)
 requests.packages.urllib3.disable_warnings()
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 0. SAFETY: SSRF GUARD, RETRY HELPER, LIGHTWEIGHT CACHE
+# 0. SAFETY: SSRF GUARD, RETRY HELPER, LIGHTWEIGHT CACHE & TRUSTED DOMAINS
 # ═══════════════════════════════════════════════════════════════════════════════
+
+TRUSTED_EMAIL_DOMAINS = {"gmail.com", "yahoo.com", "proton.me", "protonmail.com", "icloud.com", "me.com", "mac.com"}
+
+def validate_trusted_email(email: str) -> bool:
+    try:
+        domain = email.strip().lower().split('@')[1]
+        return domain in TRUSTED_EMAIL_DOMAINS
+    except IndexError:
+        return False
 
 class ScopeViolation(Exception):
     """Raised when a target resolves to a disallowed internal/metadata address."""
@@ -1019,11 +1030,13 @@ def main():
 
             else:
                 if not st.session_state.reg_otp_sent:
-                    new_email = st.text_input("New Operator Email")
+                    new_email = st.text_input("New Operator Email (Gmail, Yahoo, Proton, Apple only)")
                     new_pass = st.text_input("Choose Secure Password", type="password")
 
                     if st.button("Send Verification Code", use_container_width=True):
-                        if len(new_email) > 3 and len(new_pass) >= 6:
+                        if not validate_trusted_email(new_email):
+                            st.error("Access Denied: Temporary or disposable emails are strictly blocked. Use a trusted provider (Gmail, Yahoo, Proton, Apple).")
+                        elif len(new_email) > 3 and len(new_pass) >= 6:
                             otp = str(random.randint(100000, 999999))
                             st.session_state.reg_generated_otp = otp
                             st.session_state.reg_temp_email = new_email
@@ -1046,11 +1059,16 @@ def main():
                         if st.button("Verify & Register", use_container_width=True):
                             if entered_otp.strip() == st.session_state.reg_generated_otp:
                                 if db.create_user(st.session_state.reg_temp_email, st.session_state.reg_temp_pass):
-                                    st.success("Account successfully verified and registered! Please switch to 'Sign In' to access your console.")
+                                    st.session_state.authenticated = True
+                                    st.session_state.user = st.session_state.reg_temp_email
+                                    st.session_state.login_attempts = 0
+
                                     st.session_state.reg_otp_sent = False
                                     st.session_state.reg_generated_otp = ""
                                     st.session_state.reg_temp_email = ""
                                     st.session_state.reg_temp_pass = ""
+
+                                    st.success("Verification successful! Initializing Naqaab50 operational console...")
                                     st.rerun()
                                 else:
                                     st.error("Registration failed: Email already registered in SQLite database.")
@@ -1068,7 +1086,6 @@ def main():
 
     max_scans_per_day = int(st.secrets.get("MAX_ACTIVE_SCANS_PER_DAY", DEFAULT_MAX_ACTIVE_SCANS_PER_DAY))
 
-    # Retrieve current operator's personal stored API keys from SQLite database vault
     saved_keys = db.get_user_keys(st.session_state.user)
 
     vt_key = saved_keys["vt"] or st.secrets.get("VIRUSTOTAL_API_KEY", "")
