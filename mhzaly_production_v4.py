@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.0 - ELITE HACKER EDITION
+NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.1 - ELITE HACKER EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Cyberpunk Dark Hacker Theme with Monospace Fonts, Glowing Neon Accents & Sleek Cards
-- Dual Authentication Gateway: Operator Email/Password (Sign In / Create Account) + Real Google OAuth
+- Dual Authentication Gateway: Operator Email/Password (Sign In / Create Account with Email OTP Verification) + Real Google OAuth
 - Personal Persistent API Key Vault (SQLite-backed operator key management)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md, .json, .csv)
@@ -32,6 +32,10 @@ import logging
 import time
 import hmac
 import ipaddress
+import random
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, asdict
@@ -240,6 +244,35 @@ def check_and_increment_scan_quota(operator: str, max_per_day: int) -> Optional[
     quota_state[operator] = day_state
     st.session_state[quota_key] = quota_state
     return None
+
+
+def send_otp_email(receiver_email: str, otp_code: str) -> bool:
+    try:
+        sender_email = st.secrets["smtp"]["EMAIL_SENDER"]
+        sender_password = st.secrets["smtp"]["EMAIL_PASSWORD"]
+    except Exception:
+        # Fallback if secrets are missing during simulation
+        logger.warning("SMTP secrets not found. Simulating email dispatch.")
+        return True
+
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    message["Subject"] = "Naqaab50 - Email Verification OTP"
+
+    body = f"Aapka Naqaab50 verification code yeh hai: {otp_code}\nYeh code sirf kuch der ke liye valid hai."
+    message.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        logger.error(f"SMTP Dispatch Error: {e}")
+        return False
 
 
 class SecurityDatabase:
@@ -933,13 +966,23 @@ def main():
     if 'login_locked_until' not in st.session_state:
         st.session_state.login_locked_until = 0.0
 
+    # Session states for Email OTP Verification during registration
+    if 'reg_otp_sent' not in st.session_state:
+        st.session_state.reg_otp_sent = False
+    if 'reg_temp_email' not in st.session_state:
+        st.session_state.reg_temp_email = ""
+    if 'reg_temp_pass' not in st.session_state:
+        st.session_state.reg_temp_pass = ""
+    if 'reg_generated_otp' not in st.session_state:
+        st.session_state.reg_generated_otp = ""
+
     # Real Google OAuth Callback Handler
     query_params = st.query_params
     if "code" in query_params and not st.session_state.authenticated:
         code = query_params["code"]
         google_client_id = st.secrets.get("GOOGLE_CLIENT_ID", "")
         google_client_secret = st.secrets.get("GOOGLE_CLIENT_SECRET", "")
-        redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "http://localhost:8501")
+        redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "https://naqb50.streamlit.app/")
 
         if google_client_id and google_client_secret:
             token_url = "https://oauth2.googleapis.com/token"
@@ -1003,22 +1046,53 @@ def main():
                             st.error("Access Denied: Invalid credentials.")
 
             elif auth_mode == "Create Account":
-                new_email = st.text_input("New Operator Email")
-                new_pass = st.text_input("Choose Secure Password", type="password")
+                if not st.session_state.reg_otp_sent:
+                    new_email = st.text_input("New Operator Email")
+                    new_pass = st.text_input("Choose Secure Password", type="password")
 
-                if st.button("Register Account", use_container_width=True):
-                    if len(new_email) > 3 and len(new_pass) >= 6:
-                        if db.create_user(new_email, new_pass):
-                            st.success("Account successfully created! Please switch to 'Sign In' to access your console.")
+                    if st.button("Send Verification Code", use_container_width=True):
+                        if len(new_email) > 3 and len(new_pass) >= 6:
+                            otp = str(random.randint(100000, 999999))
+                            st.session_state.reg_generated_otp = otp
+                            st.session_state.reg_temp_email = new_email
+                            st.session_state.reg_temp_pass = new_pass
+
+                            if send_otp_email(new_email, otp):
+                                st.session_state.reg_otp_sent = True
+                                st.success("Verification code email par bhej diya gaya hai!")
+                                st.rerun()
+                            else:
+                                st.error("Email dispatch karne mein masla aaya. SMTP configuration check karein.")
                         else:
-                            st.error("Registration failed: Email already registered in SQLite database.")
-                    else:
-                        st.warning("Please enter a valid email and a password of at least 6 characters.")
+                            st.warning("Please enter a valid email and a password of at least 6 characters.")
+                else:
+                    st.info(f"Verification code sent to `{st.session_state.reg_temp_email}`")
+                    entered_otp = st.text_input("Enter 6-Digit Verification Code")
+
+                    col_otp1, col_otp2 = st.columns(2)
+                    with col_otp1:
+                        if st.button("Verify & Register", use_container_width=True):
+                            if entered_otp.strip() == st.session_state.reg_generated_otp:
+                                if db.create_user(st.session_state.reg_temp_email, st.session_state.reg_temp_pass):
+                                    st.success("Account successfully verified and registered! Please switch to 'Sign In' to access your console.")
+                                    st.session_state.reg_otp_sent = False
+                                    st.session_state.reg_generated_otp = ""
+                                    st.session_state.reg_temp_email = ""
+                                    st.session_state.reg_temp_pass = ""
+                                    st.rerun()
+                                else:
+                                    st.error("Registration failed: Email already registered in SQLite database.")
+                            else:
+                                st.error("Ghalat OTP code! Dobara check karein.")
+                    with col_otp2:
+                        if st.button("Cancel / Retry", use_container_width=True):
+                            st.session_state.reg_otp_sent = False
+                            st.rerun()
 
             else:
                 st.markdown("<p style='text-align: center; color: #a0aec0;'>Authenticate securely using official Google workspace credentials.</p>", unsafe_allow_html=True)
                 client_id = st.secrets.get("GOOGLE_CLIENT_ID", "")
-                redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "http://localhost:8501")
+                redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "https://naqb50.streamlit.app/")
 
                 if client_id:
                     google_auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={client_id}&redirect_uri={urllib.parse.quote(redirect_uri)}&scope=openid%20email%20profile"
@@ -1340,7 +1414,7 @@ Automated security intelligence gathering was completed against `{pipeline_targe
         st.markdown("# // SOC LOG PARSING & ANOMALY DETECTOR")
         st.markdown("<p style='color: #a0aec0;'>Paste raw server access logs or Windows Event logs below to simulate SIEM parsing and anomaly detection.</p>", unsafe_allow_html=True)
 
-        sample_log = st.text_area("Raw Log Data Input", placeholder="Paste Apache/Nginx access log or Windows Event ID log lines here...", height=150)
+        sample_log = st.text_area("Raw Log Data Input", placeholder="Paste Apache/Nginx access log or Windows Event log lines here...", height=150)
 
         if st.button("Analyze Logs & Detect Anomalies", use_container_width=True):
             if sample_log:
