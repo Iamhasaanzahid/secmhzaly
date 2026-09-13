@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.1 - ELITE HACKER EDITION
+NAQAAB50 BUG BOUNTY & ENTERPRISE SECURITY PLATFORM v18.2 - ELITE HACKER EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Comprehensive Purple Team Operations Suite (Red Team Recon + Blue Team SOC Automation)
 - Cyberpunk Dark Hacker Theme with Monospace Fonts, Glowing Neon Accents & Sleek Cards
-- Dual Authentication Gateway: Operator Email/Password (Sign In / Create Account with Email OTP Verification) + Real Google OAuth
+- Secure Authentication Gateway: Operator Email/Password (Sign In / Create Account with Email OTP Verification)
 - Personal Persistent API Key Vault (SQLite-backed operator key management)
 - 100% Autonomous AI-Agent Pipeline with Soft-404 Filtering & Smart CVSS Thresholds
 - Fully Automated Enterprise Security Assessment Report Generator & Exporter (.md, .json, .csv)
@@ -853,7 +853,7 @@ class AdvancedReconEngine:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 3. STREAMLIT HACKER TERMINAL UI & OAUTH HANDLER
+# 3. STREAMLIT HACKER TERMINAL UI & AUTH GATEWAY (EMAIL + OTP ONLY)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def authorization_gate(key_suffix: str) -> bool:
@@ -979,42 +979,6 @@ def main():
     if 'reg_generated_otp' not in st.session_state:
         st.session_state.reg_generated_otp = ""
 
-    # Real Google OAuth Callback Handler with direct fallback support
-    query_params = st.query_params
-    if "code" in query_params and not st.session_state.authenticated:
-        code = query_params["code"]
-        google_client_id = "763689681371-todpc6sgvbcodsntaiunbdcii2a037f8.apps.googleusercontent.com"
-        google_client_secret = "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"
-        try:
-            google_client_id = st.secrets.get("GOOGLE_CLIENT_ID", google_client_id)
-            google_client_secret = st.secrets.get("GOOGLE_CLIENT_SECRET", google_client_secret)
-        except Exception:
-            pass
-        redirect_uri = "https://naqb50.streamlit.app/"
-
-        if google_client_id and google_client_secret:
-            token_url = "https://oauth2.googleapis.com/token"
-            payload = {
-                "code": code,
-                "client_id": google_client_id,
-                "client_secret": google_client_secret,
-                "redirect_uri": redirect_uri,
-                "grant_type": "authorization_code"
-            }
-            try:
-                token_resp = requests.post(token_url, data=payload)
-                if token_resp.status_code == 200:
-                    access_token = token_resp.json().get("access_token")
-                    userinfo_resp = requests.get("https://www.googleapis.com/oauth2/v3/userinfo", headers={"Authorization": f"Bearer {access_token}"})
-                    if userinfo_resp.status_code == 200:
-                        user_email = userinfo_resp.json().get("email")
-                        st.session_state.authenticated = True
-                        st.session_state.user = user_email
-                        st.query_params.clear()
-                        st.rerun()
-            except Exception as e:
-                st.error(f"Google OAuth token exchange failed: {e}")
-
     if not st.session_state.authenticated:
         col1, col2, col3 = st.columns([1, 1.2, 1])
         with col2:
@@ -1026,7 +990,7 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
 
-            auth_mode = st.radio("Access Mode", ["Sign In", "Create Account", "Google Continue (SSO)"], horizontal=True)
+            auth_mode = st.radio("Access Mode", ["Sign In", "Create Account"], horizontal=True)
 
             if auth_mode == "Sign In":
                 username = st.text_input("Operator Email / Identifier")
@@ -1053,7 +1017,7 @@ def main():
                         else:
                             st.error("Access Denied: Invalid credentials.")
 
-            elif auth_mode == "Create Account":
+            else:
                 if not st.session_state.reg_otp_sent:
                     new_email = st.text_input("New Operator Email")
                     new_pass = st.text_input("Choose Secure Password", type="password")
@@ -1096,26 +1060,6 @@ def main():
                         if st.button("Cancel / Retry", use_container_width=True):
                             st.session_state.reg_otp_sent = False
                             st.rerun()
-
-            else:
-                st.markdown("<p style='text-align: center; color: #a0aec0;'>Authenticate securely using official Google workspace credentials.</p>", unsafe_allow_html=True)
-                client_id = "763689681371-todpc6sgvbcodsntaiunbdcii2a037f8.apps.googleusercontent.com"
-                try:
-                    client_id = st.secrets.get("GOOGLE_CLIENT_ID", client_id)
-                except Exception:
-                    pass
-                redirect_uri = "https://naqb50.streamlit.app/"
-
-                if client_id:
-                    google_auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={client_id}&redirect_uri={urllib.parse.quote(redirect_uri)}&scope=openid%20email%20profile"
-                    st.markdown(f'<a href="{google_auth_url}" target="_self"><button style="width:100%; background:#001105; color:#00ff66; border:1px solid #00ff66; padding:10px; border-radius:4px; font-family:\'Share Tech Mono\'; font-weight:600; cursor:pointer; box-shadow:0 0 10px rgba(0,255,102,0.2);">Continue with Google Workspace</button></a>', unsafe_allow_html=True)
-                else:
-                    st.info("Google Client ID missing in secrets. Falling back to simulator mode:")
-                    if st.button("Simulate Google Login", use_container_width=True):
-                        st.session_state.authenticated = True
-                        st.session_state.user = st.secrets.get("DEFAULT_GOOGLE_USER", "operator.naqaab@gmail.com")
-                        st.success("Google handshake verified.")
-                        st.rerun()
         return
 
     session_timeout_minutes = int(st.secrets.get("SESSION_TIMEOUT_MINUTES", DEFAULT_SESSION_TIMEOUT_MINUTES))
