@@ -251,9 +251,12 @@ def send_otp_email(receiver_email: str, otp_code: str) -> bool:
         sender_email = st.secrets["smtp"]["EMAIL_SENDER"]
         sender_password = st.secrets["smtp"]["EMAIL_PASSWORD"]
     except Exception:
-        # Fallback if secrets are missing during simulation
-        logger.warning("SMTP secrets not found. Simulating email dispatch.")
-        return True
+        try:
+            sender_email = st.secrets.get("EMAIL_SENDER", "muhammadhassaanaly@gmail.com")
+            sender_password = st.secrets.get("EMAIL_PASSWORD", "rzqiejtisddoappv")
+        except Exception:
+            logger.warning("SMTP secrets not found. Simulating email dispatch.")
+            return True
 
     message = MIMEMultipart()
     message["From"] = sender_email
@@ -976,13 +979,18 @@ def main():
     if 'reg_generated_otp' not in st.session_state:
         st.session_state.reg_generated_otp = ""
 
-    # Real Google OAuth Callback Handler
+    # Real Google OAuth Callback Handler with direct fallback support
     query_params = st.query_params
     if "code" in query_params and not st.session_state.authenticated:
         code = query_params["code"]
-        google_client_id = st.secrets.get("GOOGLE_CLIENT_ID", "")
-        google_client_secret = st.secrets.get("GOOGLE_CLIENT_SECRET", "")
-        redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "https://naqb50.streamlit.app/")
+        google_client_id = "763689681371-todpc6sgvbcodsntaiunbdcii2a037f8.apps.googleusercontent.com"
+        google_client_secret = "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"
+        try:
+            google_client_id = st.secrets.get("GOOGLE_CLIENT_ID", google_client_id)
+            google_client_secret = st.secrets.get("GOOGLE_CLIENT_SECRET", google_client_secret)
+        except Exception:
+            pass
+        redirect_uri = "https://naqb50.streamlit.app/"
 
         if google_client_id and google_client_secret:
             token_url = "https://oauth2.googleapis.com/token"
@@ -1091,8 +1099,12 @@ def main():
 
             else:
                 st.markdown("<p style='text-align: center; color: #a0aec0;'>Authenticate securely using official Google workspace credentials.</p>", unsafe_allow_html=True)
-                client_id = st.secrets.get("GOOGLE_CLIENT_ID", "")
-                redirect_uri = st.secrets.get("GOOGLE_REDIRECT_URI", "https://naqb50.streamlit.app/")
+                client_id = "763689681371-todpc6sgvbcodsntaiunbdcii2a037f8.apps.googleusercontent.com"
+                try:
+                    client_id = st.secrets.get("GOOGLE_CLIENT_ID", client_id)
+                except Exception:
+                    pass
+                redirect_uri = "https://naqb50.streamlit.app/"
 
                 if client_id:
                     google_auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={client_id}&redirect_uri={urllib.parse.quote(redirect_uri)}&scope=openid%20email%20profile"
@@ -1117,7 +1129,7 @@ def main():
 
     vt_key = saved_keys["vt"] or st.secrets.get("VIRUSTOTAL_API_KEY", "")
     abuse_key = saved_keys["abuse"] or st.secrets.get("ABUSEIPDB_API_KEY", "")
-    groq_key = saved_keys["groq"] or st.secrets.get("GROQ_API_KEY", "")
+    groq_key = saved_keys["groq"] or st.secrets.get("GROQ_API_KEY", "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")
     nvd_key = saved_keys["nvd"] or st.secrets.get("NVD_API_KEY", "")
     shared_cache = get_shared_cache()
 
